@@ -12,7 +12,18 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as TrainerRouteImport } from './routes/_trainer'
+import { Route as OwnerRouteImport } from './routes/_owner'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OwnerTrainersRouteImport } from './routes/_owner.trainers'
+import { Route as OwnerPlansRouteImport } from './routes/_owner.plans'
+import { Route as OwnerDashboardRouteImport } from './routes/_owner.dashboard'
+import { Route as OwnerAttendanceRouteImport } from './routes/_owner.attendance'
+import { Route as OwnerMembersIndexRouteImport } from './routes/_owner.members.index'
+import { Route as TrainerTrainerMembersRouteImport } from './routes/_trainer.trainer.members'
+import { Route as TrainerTrainerAttendanceRouteImport } from './routes/_trainer.trainer.attendance'
+import { Route as OwnerMembersNewRouteImport } from './routes/_owner.members.new'
+import { Route as OwnerMembersIdRouteImport } from './routes/_owner.members.$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -29,10 +40,64 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TrainerRoute = TrainerRouteImport.update({
+  id: '/_trainer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerRoute = OwnerRouteImport.update({
+  id: '/_owner',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const OwnerTrainersRoute = OwnerTrainersRouteImport.update({
+  id: '/trainers',
+  path: '/trainers',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerPlansRoute = OwnerPlansRouteImport.update({
+  id: '/plans',
+  path: '/plans',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerDashboardRoute = OwnerDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerAttendanceRoute = OwnerAttendanceRouteImport.update({
+  id: '/attendance',
+  path: '/attendance',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerMembersIndexRoute = OwnerMembersIndexRouteImport.update({
+  id: '/members/',
+  path: '/members/',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const TrainerTrainerMembersRoute = TrainerTrainerMembersRouteImport.update({
+  id: '/trainer/members',
+  path: '/trainer/members',
+  getParentRoute: () => TrainerRoute,
+} as any)
+const TrainerTrainerAttendanceRoute =
+  TrainerTrainerAttendanceRouteImport.update({
+    id: '/trainer/attendance',
+    path: '/trainer/attendance',
+    getParentRoute: () => TrainerRoute,
+  } as any)
+const OwnerMembersNewRoute = OwnerMembersNewRouteImport.update({
+  id: '/members/new',
+  path: '/members/new',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerMembersIdRoute = OwnerMembersIdRouteImport.update({
+  id: '/members/$id',
+  path: '/members/$id',
+  getParentRoute: () => OwnerRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -40,30 +105,103 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/attendance': typeof OwnerAttendanceRoute
+  '/dashboard': typeof OwnerDashboardRoute
+  '/plans': typeof OwnerPlansRoute
+  '/trainers': typeof OwnerTrainersRoute
+  '/members/$id': typeof OwnerMembersIdRoute
+  '/members/new': typeof OwnerMembersNewRoute
+  '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
+  '/trainer/members': typeof TrainerTrainerMembersRoute
+  '/members/': typeof OwnerMembersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/attendance': typeof OwnerAttendanceRoute
+  '/dashboard': typeof OwnerDashboardRoute
+  '/plans': typeof OwnerPlansRoute
+  '/trainers': typeof OwnerTrainersRoute
+  '/members/$id': typeof OwnerMembersIdRoute
+  '/members/new': typeof OwnerMembersNewRoute
+  '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
+  '/trainer/members': typeof TrainerTrainerMembersRoute
+  '/members': typeof OwnerMembersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_owner': typeof OwnerRouteWithChildren
+  '/_trainer': typeof TrainerRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_owner/attendance': typeof OwnerAttendanceRoute
+  '/_owner/dashboard': typeof OwnerDashboardRoute
+  '/_owner/plans': typeof OwnerPlansRoute
+  '/_owner/trainers': typeof OwnerTrainersRoute
+  '/_owner/members/$id': typeof OwnerMembersIdRoute
+  '/_owner/members/new': typeof OwnerMembersNewRoute
+  '/_trainer/trainer/attendance': typeof TrainerTrainerAttendanceRoute
+  '/_trainer/trainer/members': typeof TrainerTrainerMembersRoute
+  '/_owner/members/': typeof OwnerMembersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/forgot-password' | '/login' | '/signup'
+  fullPaths:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/signup'
+    | '/attendance'
+    | '/dashboard'
+    | '/plans'
+    | '/trainers'
+    | '/members/$id'
+    | '/members/new'
+    | '/trainer/attendance'
+    | '/trainer/members'
+    | '/members/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/forgot-password' | '/login' | '/signup'
-  id: '__root__' | '/' | '/forgot-password' | '/login' | '/signup'
+  to:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/signup'
+    | '/attendance'
+    | '/dashboard'
+    | '/plans'
+    | '/trainers'
+    | '/members/$id'
+    | '/members/new'
+    | '/trainer/attendance'
+    | '/trainer/members'
+    | '/members'
+  id:
+    | '__root__'
+    | '/'
+    | '/_owner'
+    | '/_trainer'
+    | '/forgot-password'
+    | '/login'
+    | '/signup'
+    | '/_owner/attendance'
+    | '/_owner/dashboard'
+    | '/_owner/plans'
+    | '/_owner/trainers'
+    | '/_owner/members/$id'
+    | '/_owner/members/new'
+    | '/_trainer/trainer/attendance'
+    | '/_trainer/trainer/members'
+    | '/_owner/members/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OwnerRoute: typeof OwnerRouteWithChildren
+  TrainerRoute: typeof TrainerRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
@@ -92,6 +230,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_trainer': {
+      id: '/_trainer'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof TrainerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_owner': {
+      id: '/_owner'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof OwnerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -99,11 +251,111 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_owner/trainers': {
+      id: '/_owner/trainers'
+      path: '/trainers'
+      fullPath: '/trainers'
+      preLoaderRoute: typeof OwnerTrainersRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/_owner/plans': {
+      id: '/_owner/plans'
+      path: '/plans'
+      fullPath: '/plans'
+      preLoaderRoute: typeof OwnerPlansRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/_owner/dashboard': {
+      id: '/_owner/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof OwnerDashboardRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/_owner/attendance': {
+      id: '/_owner/attendance'
+      path: '/attendance'
+      fullPath: '/attendance'
+      preLoaderRoute: typeof OwnerAttendanceRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/_owner/members/': {
+      id: '/_owner/members/'
+      path: '/members'
+      fullPath: '/members/'
+      preLoaderRoute: typeof OwnerMembersIndexRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/_trainer/trainer/members': {
+      id: '/_trainer/trainer/members'
+      path: '/trainer/members'
+      fullPath: '/trainer/members'
+      preLoaderRoute: typeof TrainerTrainerMembersRouteImport
+      parentRoute: typeof TrainerRoute
+    }
+    '/_trainer/trainer/attendance': {
+      id: '/_trainer/trainer/attendance'
+      path: '/trainer/attendance'
+      fullPath: '/trainer/attendance'
+      preLoaderRoute: typeof TrainerTrainerAttendanceRouteImport
+      parentRoute: typeof TrainerRoute
+    }
+    '/_owner/members/new': {
+      id: '/_owner/members/new'
+      path: '/members/new'
+      fullPath: '/members/new'
+      preLoaderRoute: typeof OwnerMembersNewRouteImport
+      parentRoute: typeof OwnerRoute
+    }
+    '/_owner/members/$id': {
+      id: '/_owner/members/$id'
+      path: '/members/$id'
+      fullPath: '/members/$id'
+      preLoaderRoute: typeof OwnerMembersIdRouteImport
+      parentRoute: typeof OwnerRoute
+    }
   }
 }
 
+interface OwnerRouteChildren {
+  OwnerAttendanceRoute: typeof OwnerAttendanceRoute
+  OwnerDashboardRoute: typeof OwnerDashboardRoute
+  OwnerPlansRoute: typeof OwnerPlansRoute
+  OwnerTrainersRoute: typeof OwnerTrainersRoute
+  OwnerMembersIdRoute: typeof OwnerMembersIdRoute
+  OwnerMembersNewRoute: typeof OwnerMembersNewRoute
+  OwnerMembersIndexRoute: typeof OwnerMembersIndexRoute
+}
+
+const OwnerRouteChildren: OwnerRouteChildren = {
+  OwnerAttendanceRoute: OwnerAttendanceRoute,
+  OwnerDashboardRoute: OwnerDashboardRoute,
+  OwnerPlansRoute: OwnerPlansRoute,
+  OwnerTrainersRoute: OwnerTrainersRoute,
+  OwnerMembersIdRoute: OwnerMembersIdRoute,
+  OwnerMembersNewRoute: OwnerMembersNewRoute,
+  OwnerMembersIndexRoute: OwnerMembersIndexRoute,
+}
+
+const OwnerRouteWithChildren = OwnerRoute._addFileChildren(OwnerRouteChildren)
+
+interface TrainerRouteChildren {
+  TrainerTrainerAttendanceRoute: typeof TrainerTrainerAttendanceRoute
+  TrainerTrainerMembersRoute: typeof TrainerTrainerMembersRoute
+}
+
+const TrainerRouteChildren: TrainerRouteChildren = {
+  TrainerTrainerAttendanceRoute: TrainerTrainerAttendanceRoute,
+  TrainerTrainerMembersRoute: TrainerTrainerMembersRoute,
+}
+
+const TrainerRouteWithChildren =
+  TrainerRoute._addFileChildren(TrainerRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OwnerRoute: OwnerRouteWithChildren,
+  TrainerRoute: TrainerRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
