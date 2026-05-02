@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useSession, useGym } from "@/lib/useStore";
 import { logout } from "@/lib/store";
+import { initBgTheme } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -11,6 +13,7 @@ import {
   LogOut,
   UserCog,
   Wallet,
+  Palette,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -21,6 +24,7 @@ const ownerNav = [
   { to: "/revenue", label: "Revenue", icon: Wallet },
   { to: "/trainers", label: "Trainers", icon: UserCog },
   { to: "/plans", label: "Plans", icon: Settings },
+  { to: "/settings", label: "Appearance", icon: Palette },
 ];
 
 const trainerNav = [
@@ -33,6 +37,10 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
   const gym = useGym(session?.gymId);
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    initBgTheme();
+  }, []);
 
   if (!session || !gym) return null;
   const nav = role === "owner" ? ownerNav : trainerNav;
