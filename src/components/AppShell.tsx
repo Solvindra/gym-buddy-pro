@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useSession, useGym } from "@/lib/useStore";
 import { logout } from "@/lib/store";
-import { initBgTheme, initDarkMode } from "@/lib/theme";
+import { initDarkMode } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -39,7 +39,6 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
   const path = useRouterState({ select: (s) => s.location.pathname });
 
   useEffect(() => {
-    initBgTheme();
     initDarkMode();
   }, []);
 
