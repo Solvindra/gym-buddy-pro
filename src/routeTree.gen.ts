@@ -16,6 +16,7 @@ import { Route as TrainerRouteImport } from './routes/_trainer'
 import { Route as OwnerRouteImport } from './routes/_owner'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as OwnerTrainersRouteImport } from './routes/_owner.trainers'
+import { Route as OwnerRevenueRouteImport } from './routes/_owner.revenue'
 import { Route as OwnerPlansRouteImport } from './routes/_owner.plans'
 import { Route as OwnerDashboardRouteImport } from './routes/_owner.dashboard'
 import { Route as OwnerAttendanceRouteImport } from './routes/_owner.attendance'
@@ -56,6 +57,11 @@ const IndexRoute = IndexRouteImport.update({
 const OwnerTrainersRoute = OwnerTrainersRouteImport.update({
   id: '/trainers',
   path: '/trainers',
+  getParentRoute: () => OwnerRoute,
+} as any)
+const OwnerRevenueRoute = OwnerRevenueRouteImport.update({
+  id: '/revenue',
+  path: '/revenue',
   getParentRoute: () => OwnerRoute,
 } as any)
 const OwnerPlansRoute = OwnerPlansRouteImport.update({
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/attendance': typeof OwnerAttendanceRoute
   '/dashboard': typeof OwnerDashboardRoute
   '/plans': typeof OwnerPlansRoute
+  '/revenue': typeof OwnerRevenueRoute
   '/trainers': typeof OwnerTrainersRoute
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/attendance': typeof OwnerAttendanceRoute
   '/dashboard': typeof OwnerDashboardRoute
   '/plans': typeof OwnerPlansRoute
+  '/revenue': typeof OwnerRevenueRoute
   '/trainers': typeof OwnerTrainersRoute
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
@@ -141,6 +149,7 @@ export interface FileRoutesById {
   '/_owner/attendance': typeof OwnerAttendanceRoute
   '/_owner/dashboard': typeof OwnerDashboardRoute
   '/_owner/plans': typeof OwnerPlansRoute
+  '/_owner/revenue': typeof OwnerRevenueRoute
   '/_owner/trainers': typeof OwnerTrainersRoute
   '/_owner/members/$id': typeof OwnerMembersIdRoute
   '/_owner/members/new': typeof OwnerMembersNewRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/dashboard'
     | '/plans'
+    | '/revenue'
     | '/trainers'
     | '/members/$id'
     | '/members/new'
@@ -173,6 +183,7 @@ export interface FileRouteTypes {
     | '/attendance'
     | '/dashboard'
     | '/plans'
+    | '/revenue'
     | '/trainers'
     | '/members/$id'
     | '/members/new'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_owner/attendance'
     | '/_owner/dashboard'
     | '/_owner/plans'
+    | '/_owner/revenue'
     | '/_owner/trainers'
     | '/_owner/members/$id'
     | '/_owner/members/new'
@@ -258,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OwnerTrainersRouteImport
       parentRoute: typeof OwnerRoute
     }
+    '/_owner/revenue': {
+      id: '/_owner/revenue'
+      path: '/revenue'
+      fullPath: '/revenue'
+      preLoaderRoute: typeof OwnerRevenueRouteImport
+      parentRoute: typeof OwnerRoute
+    }
     '/_owner/plans': {
       id: '/_owner/plans'
       path: '/plans'
@@ -321,6 +340,7 @@ interface OwnerRouteChildren {
   OwnerAttendanceRoute: typeof OwnerAttendanceRoute
   OwnerDashboardRoute: typeof OwnerDashboardRoute
   OwnerPlansRoute: typeof OwnerPlansRoute
+  OwnerRevenueRoute: typeof OwnerRevenueRoute
   OwnerTrainersRoute: typeof OwnerTrainersRoute
   OwnerMembersIdRoute: typeof OwnerMembersIdRoute
   OwnerMembersNewRoute: typeof OwnerMembersNewRoute
@@ -331,6 +351,7 @@ const OwnerRouteChildren: OwnerRouteChildren = {
   OwnerAttendanceRoute: OwnerAttendanceRoute,
   OwnerDashboardRoute: OwnerDashboardRoute,
   OwnerPlansRoute: OwnerPlansRoute,
+  OwnerRevenueRoute: OwnerRevenueRoute,
   OwnerTrainersRoute: OwnerTrainersRoute,
   OwnerMembersIdRoute: OwnerMembersIdRoute,
   OwnerMembersNewRoute: OwnerMembersNewRoute,

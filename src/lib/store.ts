@@ -1,4 +1,4 @@
-import type { Gym, Member, Plan, Trainer, MembershipPeriod, Payment, MedicalInfo, Session } from "./types";
+import type { Gym, Member, Plan, Trainer, MembershipPeriod, Payment, MedicalInfo, Session, Expense } from "./types";
 
 const GYMS_KEY = "gym_app_gyms_v1";
 const SESSION_KEY = "gym_app_session_v1";
@@ -301,6 +301,20 @@ export function addTrainer(
 
 export function removeTrainer(gymId: string, trainerId: string) {
   updateGym(gymId, (g) => ({ ...g, trainers: g.trainers.filter((t) => t.id !== trainerId) }));
+}
+
+// ----- Expenses -----
+
+export function addExpense(gymId: string, input: Omit<Expense, "id">): Expense | null {
+  const g = getGym(gymId);
+  if (!g) return null;
+  const e: Expense = { ...input, id: crypto.randomUUID() };
+  updateGym(gymId, (g) => ({ ...g, expenses: [...(g.expenses ?? []), e] }));
+  return e;
+}
+
+export function removeExpense(gymId: string, expenseId: string) {
+  updateGym(gymId, (g) => ({ ...g, expenses: (g.expenses ?? []).filter((e) => e.id !== expenseId) }));
 }
 
 // ----- Helpers -----

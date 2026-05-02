@@ -57,6 +57,16 @@ export type Trainer = {
   createdAt: string;
 };
 
+export type Expense = {
+  id: string;
+  title: string;
+  category: string;
+  amount: number;
+  method: "upi" | "cash";
+  date: string; // ISO
+  notes?: string;
+};
+
 export type Gym = {
   gymId: string;
   gymName: string;
@@ -70,6 +80,7 @@ export type Gym = {
   plans: Plan[];
   members: Member[];
   trainers: Trainer[];
+  expenses?: Expense[];
 };
 
 export type Session =

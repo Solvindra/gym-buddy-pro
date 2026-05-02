@@ -10,6 +10,7 @@ import {
   Settings,
   LogOut,
   UserCog,
+  Wallet,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -17,6 +18,7 @@ const ownerNav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/members", label: "Members", icon: Users },
   { to: "/attendance", label: "Attendance", icon: ClipboardCheck },
+  { to: "/revenue", label: "Revenue", icon: Wallet },
   { to: "/trainers", label: "Trainers", icon: UserCog },
   { to: "/plans", label: "Plans", icon: Settings },
 ];
