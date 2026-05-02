@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useSession, useGym } from "@/lib/useStore";
 import { logout } from "@/lib/store";
-import { initBgTheme } from "@/lib/theme";
+import { initBgTheme, initDarkMode } from "@/lib/theme";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -40,6 +40,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
 
   useEffect(() => {
     initBgTheme();
+    initDarkMode();
   }, []);
 
   if (!session || !gym) return null;
