@@ -161,11 +161,11 @@ function RevenuePage() {
                 <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
                 <Tooltip
                   formatter={(value: number, name: string) => [fmt(value), name]}
-                  contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }}
+                  contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }}
                 />
                 <Legend />
-                <Bar dataKey="upi" name="UPI" stackId="rev" fill="var(--color-primary, hsl(var(--primary)))" radius={[0, 0, 0, 0]} />
-                <Bar dataKey="cash" name="Cash" stackId="rev" fill="var(--color-success, hsl(var(--success, 142 71% 45%)))" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="upi" name="UPI" stackId="rev" fill="var(--primary)" radius={[0, 0, 0, 0]} />
+                <Bar dataKey="cash" name="Cash" stackId="rev" fill="var(--success)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -181,11 +181,11 @@ function RevenuePage() {
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis dataKey="label" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
-              <Tooltip formatter={(v: number, n: string) => [fmt(v), n]} contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8 }} />
+              <Tooltip formatter={(v: number, n: string) => [fmt(v), n]} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }} />
               <Legend />
-              <Bar dataKey="revenue" name="Revenue" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="expense" name="Expense" fill="hsl(var(--warning, 38 92% 50%))" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="profit" name="Profit" fill="hsl(var(--success, 142 71% 45%))" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="revenue" name="Revenue" fill="var(--primary)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="expense" name="Expense" fill="var(--warning)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="profit" name="Profit" fill="var(--success)" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
