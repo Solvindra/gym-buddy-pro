@@ -20,8 +20,7 @@ function LoginPage() {
   const [ownerPwd, setOwnerPwd] = useState("");
   const [ownerKeep, setOwnerKeep] = useState(true);
 
-  const [tGymId, setTGymId] = useState("");
-  const [tUser, setTUser] = useState("");
+  const [tTrainerId, setTTrainerId] = useState("");
   const [tPwd, setTPwd] = useState("");
   const [tKeep, setTKeep] = useState(true);
 
@@ -86,12 +85,13 @@ function LoginPage() {
 
               <TabsContent value="trainer" className="space-y-4 mt-4">
                 <div className="space-y-2">
-                  <Label>Gym ID</Label>
-                  <Input value={tGymId} onChange={(e) => setTGymId(e.target.value.toUpperCase())} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Username</Label>
-                  <Input value={tUser} onChange={(e) => setTUser(e.target.value)} />
+                  <Label>Trainer ID</Label>
+                  <Input
+                    value={tTrainerId}
+                    onChange={(e) => setTTrainerId(e.target.value.toUpperCase())}
+                    placeholder="e.g. TRJORS96"
+                  />
+                  <p className="text-xs text-muted-foreground">Your Trainer ID was shared by your gym owner when your account was created.</p>
                 </div>
                 <div className="space-y-2">
                   <Label>Password</Label>
@@ -110,10 +110,10 @@ function LoginPage() {
                 <Button
                   className="w-full"
                   onClick={() => {
-                    if (loginTrainer(tGymId, tUser, tPwd, tKeep)) {
+                    if (loginTrainer(tTrainerId, tPwd, tKeep)) {
                       toast.success("Welcome!");
                       navigate({ to: "/trainer/attendance" });
-                    } else toast.error("Invalid credentials");
+                    } else toast.error("Invalid Trainer ID or password");
                   }}
                 >
                   Sign in as trainer

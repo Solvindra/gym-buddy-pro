@@ -50,9 +50,9 @@ export type Member = {
 
 export type Trainer = {
   id: string;
+  trainerId: string;
   name: string;
   phone: string;
-  username: string;
   password: string;
   createdAt: string;
 };

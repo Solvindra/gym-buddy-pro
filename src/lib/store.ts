@@ -129,13 +129,16 @@ export function loginOwner(gymId: string, password: string, persist = true): boo
   return true;
 }
 
-export function loginTrainer(gymId: string, username: string, password: string, persist = true): boolean {
-  const g = getGym(gymId.toUpperCase());
-  if (!g) return false;
-  const t = g.trainers.find((t) => t.username === username && t.password === password);
-  if (!t) return false;
-  setSession({ kind: "trainer", gymId: g.gymId, trainerId: t.id }, persist);
-  return true;
+export function loginTrainer(trainerId: string, password: string, persist = true): boolean {
+  const gyms = getGyms();
+  for (const g of Object.values(gyms)) {
+    const t = g.trainers.find((t) => t.trainerId === trainerId.toUpperCase() && t.password === password);
+    if (t) {
+      setSession({ kind: "trainer", gymId: g.gymId, trainerId: t.id }, persist);
+      return true;
+    }
+  }
+  return false;
 }
 
 export function logout() {
@@ -289,18 +292,25 @@ export function unmarkAttendance(gymId: string, memberId: string, dateISO?: stri
 
 // ----- Trainers -----
 
+export function generateTrainerId(name: string, gymId: string): string {
+  const initials = name.trim().slice(0, 2).toUpperCase().padEnd(2, "X");
+  const suffix = gymId.slice(0, 2).toUpperCase();
+  const rand = String(Math.floor(10 + Math.random() * 90));
+  return `TR${initials}${suffix}${rand}`;
+}
+
 export function addTrainer(
   gymId: string,
-  input: { name: string; phone: string; username: string; password: string }
+  input: { name: string; phone: string; password: string }
 ): Trainer | null {
   const g = getGym(gymId);
   if (!g) return null;
-  if (g.trainers.some((t) => t.username === input.username)) return null;
+  const trainerId = generateTrainerId(input.name, gymId);
   const t: Trainer = {
     id: crypto.randomUUID(),
+    trainerId,
     name: input.name,
     phone: input.phone,
-    username: input.username,
     password: input.password,
     createdAt: new Date().toISOString(),
   };
