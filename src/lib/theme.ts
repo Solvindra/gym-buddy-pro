@@ -236,32 +236,64 @@ export function applyThemeStyles(
       background-attachment: fixed;
       min-height: 100vh;
       --gradient-subtle: transparent;
+      --gfrom: ${from};
+      --gto: ${to};
     }
     html.gradient-active body,
     html.gradient-active .bg-background {
       background-color: transparent !important;
     }
-    /* Light mode frosted glass panels */
+
+    /* ── Light mode frosted glass ── */
     html.gradient-active .bg-sidebar {
-      background-color: oklch(0.98 0.003 250 / 0.78) !important;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background-color: oklch(0.97 0.003 250 / 0.65) !important;
+      backdrop-filter: blur(20px) saturate(1.6);
+      -webkit-backdrop-filter: blur(20px) saturate(1.6);
+      box-shadow:
+        4px 0 32px -4px color-mix(in srgb, var(--gfrom) 30%, transparent),
+        inset -1px 0 0 color-mix(in srgb, var(--gfrom) 18%, transparent);
     }
     html.gradient-active .bg-card {
-      background-color: oklch(1 0 0 / 0.72) !important;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background-color: oklch(1 0 0 / 0.60) !important;
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow:
+        0 4px 24px -6px color-mix(in srgb, var(--gfrom) 35%, transparent),
+        0 1px 4px -2px color-mix(in srgb, var(--gto) 20%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--gfrom) 15%, transparent);
     }
-    /* Dark mode frosted glass panels */
+
+    /* ── Dark mode frosted glass ── */
     html.gradient-active.dark .bg-sidebar {
-      background-color: oklch(0.15 0.02 250 / 0.78) !important;
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      background-color: oklch(0.13 0.02 250 / 0.65) !important;
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      box-shadow:
+        4px 0 40px -4px color-mix(in srgb, var(--gfrom) 40%, transparent),
+        inset -1px 0 0 color-mix(in srgb, var(--gfrom) 22%, transparent);
     }
     html.gradient-active.dark .bg-card {
-      background-color: oklch(0.18 0.02 250 / 0.70) !important;
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background-color: oklch(0.16 0.02 250 / 0.58) !important;
+      backdrop-filter: blur(16px) saturate(1.6);
+      -webkit-backdrop-filter: blur(16px) saturate(1.6);
+      box-shadow:
+        0 4px 32px -6px color-mix(in srgb, var(--gfrom) 45%, transparent),
+        0 1px 8px -2px color-mix(in srgb, var(--gto) 28%, transparent),
+        inset 0 1px 0 color-mix(in srgb, var(--gfrom) 18%, transparent);
+    }
+
+    /* ── Mobile: lighter blur so it's not blurry/heavy ── */
+    @media (max-width: 768px) {
+      html.gradient-active .bg-sidebar,
+      html.gradient-active.dark .bg-sidebar {
+        backdrop-filter: blur(8px) saturate(1.4);
+        -webkit-backdrop-filter: blur(8px) saturate(1.4);
+      }
+      html.gradient-active .bg-card,
+      html.gradient-active.dark .bg-card {
+        backdrop-filter: blur(6px) saturate(1.3);
+        -webkit-backdrop-filter: blur(6px) saturate(1.3);
+      }
     }
   `;
 
