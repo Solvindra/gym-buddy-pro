@@ -198,13 +198,39 @@ export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, m
       background: ${gradientBg};
       background-attachment: fixed;
       min-height: 100vh;
+      --gradient-subtle: transparent;
     }
     html.gradient-active body,
     html.gradient-active .bg-background {
       background-color: transparent !important;
     }
-    html.gradient-active {
-      --gradient-subtle: transparent;
+
+    /* Light mode frosted glass panels */
+    html.gradient-active .bg-sidebar {
+      background-color: oklch(0.98 0.003 250 / 0.78) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    html.gradient-active .bg-card {
+      background-color: oklch(1 0 0 / 0.72) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    html.gradient-active [data-sonner-toaster] [data-sonner-toast] {
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* Dark mode frosted glass panels */
+    html.gradient-active.dark .bg-sidebar {
+      background-color: oklch(0.15 0.02 250 / 0.78) !important;
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+    html.gradient-active.dark .bg-card {
+      background-color: oklch(0.18 0.02 250 / 0.70) !important;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
   `;
 
