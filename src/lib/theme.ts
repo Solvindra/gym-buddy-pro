@@ -1,10 +1,11 @@
 const DARK_KEY = "gym_app_dark_mode_v1";
 const ACCENT_KEY = "gym_app_accent_v1";
 const GRADIENT_KEY = "gym_app_gradient_v1";
+const CUSTOM_GRADIENT_KEY = "gym_app_custom_gradient_v1";
 
 export type ColorMode = "light" | "dark";
 export type AccentColor = "blue" | "purple" | "green" | "red" | "orange" | "pink" | "teal";
-export type GradientTheme = "none" | "ocean" | "sunset" | "forest" | "ember" | "lime" | "aurora" | "midnight";
+export type GradientTheme = "none" | "ocean" | "sunset" | "forest" | "ember" | "lime" | "aurora" | "midnight" | "custom";
 
 type AccentDef = {
   label: string;
@@ -65,7 +66,7 @@ type GradientDef = {
   dark: [string, string];
 };
 
-export const GRADIENT_THEMES: Record<GradientTheme, GradientDef> = {
+export const GRADIENT_THEMES: Record<Exclude<GradientTheme, "custom">, GradientDef> = {
   none: {
     label: "None",
     preview: ["transparent", "transparent"],
@@ -116,6 +117,8 @@ export const GRADIENT_THEMES: Record<GradientTheme, GradientDef> = {
   },
 };
 
+export type CustomGradient = { from: string; to: string };
+
 export function getDarkMode(): ColorMode {
   if (typeof window === "undefined") return "light";
   return (localStorage.getItem(DARK_KEY) as ColorMode) ?? "light";
@@ -131,23 +134,40 @@ export function getGradientTheme(): GradientTheme {
   return (localStorage.getItem(GRADIENT_KEY) as GradientTheme) ?? "none";
 }
 
+export function getCustomGradient(): CustomGradient {
+  if (typeof window === "undefined") return { from: "#6366f1", to: "#06b6d4" };
+  try {
+    const stored = localStorage.getItem(CUSTOM_GRADIENT_KEY);
+    if (stored) return JSON.parse(stored) as CustomGradient;
+  } catch {}
+  return { from: "#6366f1", to: "#06b6d4" };
+}
+
 export function saveDarkMode(mode: ColorMode) {
   if (typeof window === "undefined") return;
   localStorage.setItem(DARK_KEY, mode);
   applyDarkMode(mode);
-  applyThemeStyles(getAccentColor(), getGradientTheme(), mode);
+  applyThemeStyles(getAccentColor(), getGradientTheme(), mode, getCustomGradient());
 }
 
 export function saveAccentColor(accent: AccentColor) {
   if (typeof window === "undefined") return;
   localStorage.setItem(ACCENT_KEY, accent);
-  applyThemeStyles(accent, getGradientTheme(), getDarkMode());
+  applyThemeStyles(accent, getGradientTheme(), getDarkMode(), getCustomGradient());
 }
 
-export function saveGradientTheme(gradient: GradientTheme) {
+export function saveGradientTheme(gradient: GradientTheme, custom?: CustomGradient) {
   if (typeof window === "undefined") return;
   localStorage.setItem(GRADIENT_KEY, gradient);
-  applyThemeStyles(getAccentColor(), gradient, getDarkMode());
+  const customColors = custom ?? getCustomGradient();
+  if (custom) localStorage.setItem(CUSTOM_GRADIENT_KEY, JSON.stringify(custom));
+  applyThemeStyles(getAccentColor(), gradient, getDarkMode(), customColors);
+}
+
+export function saveCustomGradient(custom: CustomGradient) {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(CUSTOM_GRADIENT_KEY, JSON.stringify(custom));
+  applyThemeStyles(getAccentColor(), "custom", getDarkMode(), custom);
 }
 
 export function applyDarkMode(mode: ColorMode) {
@@ -159,13 +179,30 @@ export function applyDarkMode(mode: ColorMode) {
   }
 }
 
-export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, mode: ColorMode) {
+export function applyThemeStyles(
+  accent: AccentColor,
+  gradient: GradientTheme,
+  mode: ColorMode,
+  custom: CustomGradient = { from: "#6366f1", to: "#06b6d4" }
+) {
   if (typeof document === "undefined") return;
 
   const ac = ACCENT_COLORS[accent];
-  const gr = GRADIENT_THEMES[gradient];
-  const [from, to] = mode === "dark" ? gr.dark : gr.light;
   const hasGradient = gradient !== "none";
+
+  let from: string;
+  let to: string;
+
+  if (gradient === "custom") {
+    from = custom.from;
+    to = custom.to;
+  } else if (gradient !== "none") {
+    const gr = GRADIENT_THEMES[gradient];
+    [from, to] = mode === "dark" ? gr.dark : gr.light;
+  } else {
+    from = "transparent";
+    to = "transparent";
+  }
 
   if (hasGradient) {
     document.documentElement.classList.add("gradient-active");
@@ -204,7 +241,6 @@ export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, m
     html.gradient-active .bg-background {
       background-color: transparent !important;
     }
-
     /* Light mode frosted glass panels */
     html.gradient-active .bg-sidebar {
       background-color: oklch(0.98 0.003 250 / 0.78) !important;
@@ -216,11 +252,6 @@ export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, m
       backdrop-filter: blur(14px);
       -webkit-backdrop-filter: blur(14px);
     }
-    html.gradient-active [data-sonner-toaster] [data-sonner-toast] {
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-    }
-
     /* Dark mode frosted glass panels */
     html.gradient-active.dark .bg-sidebar {
       background-color: oklch(0.15 0.02 250 / 0.78) !important;
@@ -246,5 +277,5 @@ export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, m
 export function initDarkMode() {
   const mode = getDarkMode();
   applyDarkMode(mode);
-  applyThemeStyles(getAccentColor(), getGradientTheme(), mode);
+  applyThemeStyles(getAccentColor(), getGradientTheme(), mode, getCustomGradient());
 }
