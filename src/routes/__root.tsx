@@ -1,7 +1,5 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRoute } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
-
-import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
@@ -26,48 +24,17 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "FitTrack — Gym Manager" },
-      { name: "description", content: "Manage members, attendance, trainers and payments for your gym." },
-      { name: "author", content: "FitTrack" },
-      { property: "og:title", content: "FitTrack — Gym Manager" },
-      { property: "og:description", content: "Manage members, attendance, trainers and payments for your gym." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
 
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Toaster />
-        <Scripts />
-      </body>
-    </html>
-  );
-}
-
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <Toaster />
+    </>
+  );
 }
 
 void Link;
