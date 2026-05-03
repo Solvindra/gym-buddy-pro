@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,9 +18,12 @@ function LoginPage() {
   const navigate = useNavigate();
   const [ownerGymId, setOwnerGymId] = useState("");
   const [ownerPwd, setOwnerPwd] = useState("");
+  const [ownerKeep, setOwnerKeep] = useState(true);
+
   const [tGymId, setTGymId] = useState("");
   const [tUser, setTUser] = useState("");
   const [tPwd, setTPwd] = useState("");
+  const [tKeep, setTKeep] = useState(true);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-subtle)" }}>
@@ -43,6 +47,7 @@ function LoginPage() {
                 <TabsTrigger value="owner">Owner</TabsTrigger>
                 <TabsTrigger value="trainer">Trainer</TabsTrigger>
               </TabsList>
+
               <TabsContent value="owner" className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label>Gym ID</Label>
@@ -52,10 +57,20 @@ function LoginPage() {
                   <Label>Password</Label>
                   <Input type="password" value={ownerPwd} onChange={(e) => setOwnerPwd(e.target.value)} />
                 </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="owner-keep"
+                    checked={ownerKeep}
+                    onCheckedChange={(v) => setOwnerKeep(!!v)}
+                  />
+                  <label htmlFor="owner-keep" className="text-sm text-muted-foreground cursor-pointer select-none">
+                    Keep me logged in
+                  </label>
+                </div>
                 <Button
                   className="w-full"
                   onClick={() => {
-                    if (loginOwner(ownerGymId, ownerPwd)) {
+                    if (loginOwner(ownerGymId, ownerPwd, ownerKeep)) {
                       toast.success("Welcome back!");
                       navigate({ to: "/dashboard" });
                     } else toast.error("Invalid Gym ID or password");
@@ -68,6 +83,7 @@ function LoginPage() {
                   <Link to="/signup" className="text-primary hover:underline">Create gym</Link>
                 </div>
               </TabsContent>
+
               <TabsContent value="trainer" className="space-y-4 mt-4">
                 <div className="space-y-2">
                   <Label>Gym ID</Label>
@@ -81,10 +97,20 @@ function LoginPage() {
                   <Label>Password</Label>
                   <Input type="password" value={tPwd} onChange={(e) => setTPwd(e.target.value)} />
                 </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="trainer-keep"
+                    checked={tKeep}
+                    onCheckedChange={(v) => setTKeep(!!v)}
+                  />
+                  <label htmlFor="trainer-keep" className="text-sm text-muted-foreground cursor-pointer select-none">
+                    Keep me logged in
+                  </label>
+                </div>
                 <Button
                   className="w-full"
                   onClick={() => {
-                    if (loginTrainer(tGymId, tUser, tPwd)) {
+                    if (loginTrainer(tGymId, tUser, tPwd, tKeep)) {
                       toast.success("Welcome!");
                       navigate({ to: "/trainer/attendance" });
                     } else toast.error("Invalid credentials");

@@ -50,12 +50,21 @@ export function updateGym(gymId: string, updater: (g: Gym) => Gym) {
 
 export function getSession(): Session {
   if (typeof window === "undefined") return null;
-  return safeParse(localStorage.getItem(SESSION_KEY), null as Session);
+  return (
+    safeParse(localStorage.getItem(SESSION_KEY), null as Session) ??
+    safeParse(sessionStorage.getItem(SESSION_KEY), null as Session)
+  );
 }
 
-export function setSession(s: Session) {
-  if (s) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-  else localStorage.removeItem(SESSION_KEY);
+export function setSession(s: Session, persist = true) {
+  if (typeof window === "undefined") return;
+  // Clear both storages first
+  localStorage.removeItem(SESSION_KEY);
+  sessionStorage.removeItem(SESSION_KEY);
+  if (s) {
+    if (persist) localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+    else sessionStorage.setItem(SESSION_KEY, JSON.stringify(s));
+  }
   emit();
 }
 
@@ -113,19 +122,19 @@ export function signupGym(input: {
   return { ok: true, gymId };
 }
 
-export function loginOwner(gymId: string, password: string): boolean {
+export function loginOwner(gymId: string, password: string, persist = true): boolean {
   const g = getGym(gymId.toUpperCase());
   if (!g || g.password !== password) return false;
-  setSession({ kind: "owner", gymId: g.gymId });
+  setSession({ kind: "owner", gymId: g.gymId }, persist);
   return true;
 }
 
-export function loginTrainer(gymId: string, username: string, password: string): boolean {
+export function loginTrainer(gymId: string, username: string, password: string, persist = true): boolean {
   const g = getGym(gymId.toUpperCase());
   if (!g) return false;
   const t = g.trainers.find((t) => t.username === username && t.password === password);
   if (!t) return false;
-  setSession({ kind: "trainer", gymId: g.gymId, trainerId: t.id });
+  setSession({ kind: "trainer", gymId: g.gymId, trainerId: t.id }, persist);
   return true;
 }
 
