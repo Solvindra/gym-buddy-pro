@@ -282,17 +282,28 @@ export function applyThemeStyles(
         inset 0 1px 0 color-mix(in srgb, var(--gfrom) 18%, transparent);
     }
 
-    /* ── Mobile: lighter blur so it's not blurry/heavy ── */
+    /* ── Mobile: remove backdrop-filter entirely (causes system-wide blur on iOS/Android) ── */
     @media (max-width: 768px) {
+      html.gradient-active {
+        background-attachment: scroll;
+      }
       html.gradient-active .bg-sidebar,
       html.gradient-active.dark .bg-sidebar {
-        backdrop-filter: blur(8px) saturate(1.4);
-        -webkit-backdrop-filter: blur(8px) saturate(1.4);
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: oklch(0.13 0.02 250 / 0.82) !important;
+      }
+      html.gradient-active:not(.dark) .bg-sidebar {
+        background-color: oklch(0.97 0.003 250 / 0.88) !important;
       }
       html.gradient-active .bg-card,
       html.gradient-active.dark .bg-card {
-        backdrop-filter: blur(6px) saturate(1.3);
-        -webkit-backdrop-filter: blur(6px) saturate(1.3);
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background-color: oklch(0.16 0.02 250 / 0.80) !important;
+      }
+      html.gradient-active:not(.dark) .bg-card {
+        background-color: oklch(1 0 0 / 0.82) !important;
       }
     }
   `;
