@@ -167,6 +167,12 @@ export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, m
   const [from, to] = mode === "dark" ? gr.dark : gr.light;
   const hasGradient = gradient !== "none";
 
+  if (hasGradient) {
+    document.documentElement.classList.add("gradient-active");
+  } else {
+    document.documentElement.classList.remove("gradient-active");
+  }
+
   const gradientBg = hasGradient
     ? `linear-gradient(135deg, ${from} 0%, ${to} 100%)`
     : "none";
@@ -188,12 +194,18 @@ export function applyThemeStyles(accent: AccentColor, gradient: GradientTheme, m
       --sidebar-ring: ${ac.dark.primary};
       --gradient-primary: linear-gradient(135deg, ${ac.dark.primary}, ${ac.dark.glow});
     }
-    html {
+    html.gradient-active {
       background: ${gradientBg};
       background-attachment: fixed;
-      min-height: 100%;
+      min-height: 100vh;
     }
-    ${hasGradient ? "body { background-color: transparent !important; }" : "body { background-color: var(--color-background); }"}
+    html.gradient-active body,
+    html.gradient-active .bg-background {
+      background-color: transparent !important;
+    }
+    html.gradient-active {
+      --gradient-subtle: transparent;
+    }
   `;
 
   let el = document.getElementById("gym-theme") as HTMLStyleElement | null;
