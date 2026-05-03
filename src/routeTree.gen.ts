@@ -22,6 +22,7 @@ import { Route as OwnerPlansRouteImport } from './routes/_owner.plans'
 import { Route as OwnerDashboardRouteImport } from './routes/_owner.dashboard'
 import { Route as OwnerAttendanceRouteImport } from './routes/_owner.attendance'
 import { Route as OwnerMembersIndexRouteImport } from './routes/_owner.members.index'
+import { Route as TrainerTrainerSettingsRouteImport } from './routes/_trainer.trainer.settings'
 import { Route as TrainerTrainerMembersRouteImport } from './routes/_trainer.trainer.members'
 import { Route as TrainerTrainerAttendanceRouteImport } from './routes/_trainer.trainer.attendance'
 import { Route as OwnerMembersNewRouteImport } from './routes/_owner.members.new'
@@ -90,6 +91,11 @@ const OwnerMembersIndexRoute = OwnerMembersIndexRouteImport.update({
   path: '/members/',
   getParentRoute: () => OwnerRoute,
 } as any)
+const TrainerTrainerSettingsRoute = TrainerTrainerSettingsRouteImport.update({
+  id: '/trainer/settings',
+  path: '/trainer/settings',
+  getParentRoute: () => TrainerRoute,
+} as any)
 const TrainerTrainerMembersRoute = TrainerTrainerMembersRouteImport.update({
   id: '/trainer/members',
   path: '/trainer/members',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/members/new': typeof OwnerMembersNewRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
   '/trainer/members': typeof TrainerTrainerMembersRoute
+  '/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/members/': typeof OwnerMembersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/members/new': typeof OwnerMembersNewRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
   '/trainer/members': typeof TrainerTrainerMembersRoute
+  '/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/members': typeof OwnerMembersIndexRoute
 }
 export interface FileRoutesById {
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/_owner/members/new': typeof OwnerMembersNewRoute
   '/_trainer/trainer/attendance': typeof TrainerTrainerAttendanceRoute
   '/_trainer/trainer/members': typeof TrainerTrainerMembersRoute
+  '/_trainer/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/_owner/members/': typeof OwnerMembersIndexRoute
 }
 export interface FileRouteTypes {
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/members/new'
     | '/trainer/attendance'
     | '/trainer/members'
+    | '/trainer/settings'
     | '/members/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
     | '/members/new'
     | '/trainer/attendance'
     | '/trainer/members'
+    | '/trainer/settings'
     | '/members'
   id:
     | '__root__'
@@ -219,6 +230,7 @@ export interface FileRouteTypes {
     | '/_owner/members/new'
     | '/_trainer/trainer/attendance'
     | '/_trainer/trainer/members'
+    | '/_trainer/trainer/settings'
     | '/_owner/members/'
   fileRoutesById: FileRoutesById
 }
@@ -324,6 +336,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OwnerMembersIndexRouteImport
       parentRoute: typeof OwnerRoute
     }
+    '/_trainer/trainer/settings': {
+      id: '/_trainer/trainer/settings'
+      path: '/trainer/settings'
+      fullPath: '/trainer/settings'
+      preLoaderRoute: typeof TrainerTrainerSettingsRouteImport
+      parentRoute: typeof TrainerRoute
+    }
     '/_trainer/trainer/members': {
       id: '/_trainer/trainer/members'
       path: '/trainer/members'
@@ -384,11 +403,13 @@ const OwnerRouteWithChildren = OwnerRoute._addFileChildren(OwnerRouteChildren)
 interface TrainerRouteChildren {
   TrainerTrainerAttendanceRoute: typeof TrainerTrainerAttendanceRoute
   TrainerTrainerMembersRoute: typeof TrainerTrainerMembersRoute
+  TrainerTrainerSettingsRoute: typeof TrainerTrainerSettingsRoute
 }
 
 const TrainerRouteChildren: TrainerRouteChildren = {
   TrainerTrainerAttendanceRoute: TrainerTrainerAttendanceRoute,
   TrainerTrainerMembersRoute: TrainerTrainerMembersRoute,
+  TrainerTrainerSettingsRoute: TrainerTrainerSettingsRoute,
 }
 
 const TrainerRouteWithChildren =

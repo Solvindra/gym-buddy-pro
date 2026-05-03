@@ -30,6 +30,7 @@ const ownerNav = [
 const trainerNav = [
   { to: "/trainer/attendance", label: "Attendance", icon: ClipboardCheck },
   { to: "/trainer/members", label: "Members", icon: Users },
+  { to: "/trainer/settings", label: "Appearance", icon: Palette },
 ];
 
 export function AppShell({ role }: { role: "owner" | "trainer" }) {
@@ -52,7 +53,10 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       <aside className="hidden md:flex w-64 flex-col border-r bg-sidebar text-sidebar-foreground">
         <div className="px-6 py-5 border-b">
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-lg flex items-center justify-center text-primary-foreground" style={{ background: "var(--gradient-primary)" }}>
+            <div
+              className="h-9 w-9 rounded-lg flex items-center justify-center text-primary-foreground"
+              style={{ background: "var(--gradient-primary)" }}
+            >
               <Dumbbell className="h-5 w-5" />
             </div>
             <div className="min-w-0">
@@ -84,7 +88,10 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
         </nav>
         <div className="p-3 border-t">
           <div className="px-3 py-2 text-xs text-muted-foreground">
-            Signed in as <span className="font-medium text-foreground">{trainer ? trainer.name : `${gym.ownerName} (Owner)`}</span>
+            Signed in as{" "}
+            <span className="font-medium text-foreground">
+              {trainer ? trainer.name : `${gym.ownerName} (Owner)`}
+            </span>
           </div>
           <Button
             variant="ghost"
@@ -126,7 +133,9 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
                 to={n.to}
                 className={cn(
                   "px-4 py-2 text-xs whitespace-nowrap border-b-2",
-                  active ? "border-primary text-primary font-medium" : "border-transparent text-muted-foreground"
+                  active
+                    ? "border-primary text-primary font-medium"
+                    : "border-transparent text-muted-foreground"
                 )}
               >
                 {n.label}
