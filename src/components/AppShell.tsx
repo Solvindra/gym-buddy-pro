@@ -16,16 +16,18 @@ import {
   Palette,
   Menu,
   X,
+  Crown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const ownerNav = [
-  { to: "/dashboard",  label: "Dashboard",  icon: LayoutDashboard, color: "#6366f1", bg: "#6366f120" },
-  { to: "/members",    label: "Members",    icon: Users,            color: "#3b82f6", bg: "#3b82f620" },
-  { to: "/attendance", label: "Attendance", icon: ClipboardCheck,   color: "#22c55e", bg: "#22c55e20" },
-  { to: "/revenue",    label: "Revenue",    icon: Wallet,           color: "#f59e0b", bg: "#f59e0b20" },
-  { to: "/trainers",   label: "Trainers",   icon: UserCog,          color: "#f97316", bg: "#f97316 20" },
-  { to: "/settings",   label: "Settings",   icon: Settings,         color: "#a855f7", bg: "#a855f720" },
+  { to: "/dashboard",    label: "Dashboard",    icon: LayoutDashboard, color: "#6366f1", bg: "#6366f120" },
+  { to: "/members",      label: "Members",      icon: Users,            color: "#3b82f6", bg: "#3b82f620" },
+  { to: "/attendance",   label: "Attendance",   icon: ClipboardCheck,   color: "#22c55e", bg: "#22c55e20" },
+  { to: "/revenue",      label: "Revenue",      icon: Wallet,           color: "#f59e0b", bg: "#f59e0b20" },
+  { to: "/trainers",     label: "Trainers",     icon: UserCog,          color: "#f97316", bg: "#f9731620" },
+  { to: "/settings",     label: "Settings",     icon: Settings,         color: "#a855f7", bg: "#a855f720" },
+  { to: "/subscription", label: "Subscription", icon: Crown,            color: "#f59e0b", bg: "#f59e0b20" },
 ];
 
 const trainerNav = [

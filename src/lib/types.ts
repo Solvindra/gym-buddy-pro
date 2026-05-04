@@ -67,6 +67,8 @@ export type Expense = {
   notes?: string;
 };
 
+export type SubscriptionTier = "free" | "pro";
+
 export type Gym = {
   gymId: string;
   gymName: string;
@@ -81,6 +83,7 @@ export type Gym = {
   members: Member[];
   trainers: Trainer[];
   expenses?: Expense[];
+  subscriptionTier?: SubscriptionTier;
 };
 
 export type Session =

@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSession, useGym } from "@/lib/useStore";
 import { addPlan, removePlan } from "@/lib/store";
+import { isPro } from "@/lib/subscription";
 import { AppearancePanel } from "@/components/AppearancePanel";
 import { ChartColorsCard } from "@/components/ChartColorsCard";
+import { UpgradeBanner } from "@/components/UpgradeGate";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +24,7 @@ function AccordionSection({
   title,
   description,
   defaultOpen = false,
+  locked = false,
   children,
 }: {
   icon: React.ElementType;
@@ -29,6 +32,7 @@ function AccordionSection({
   title: string;
   description: string;
   defaultOpen?: boolean;
+  locked?: boolean;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
@@ -45,7 +49,12 @@ function AccordionSection({
           <Icon className="h-4 w-4" />
         </span>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-sm leading-tight">{title}</div>
+          <div className="font-semibold text-sm leading-tight flex items-center gap-2">
+            {title}
+            {locked && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">PRO</span>
+            )}
+          </div>
           <div className="text-xs text-muted-foreground mt-0.5">{description}</div>
         </div>
         <ChevronDown
@@ -120,6 +129,11 @@ function PlansContent() {
 }
 
 function SettingsPage() {
+  const session = useSession();
+  const gym = useGym(session?.gymId);
+  if (!gym) return null;
+  const pro = isPro(gym);
+
   return (
     <div className="max-w-2xl space-y-4">
       <div className="pb-2">
@@ -142,23 +156,33 @@ function SettingsPage() {
         iconColor="#3b82f6"
         title="Owner App Appearance"
         description="Customize your personal theme, accent colour, and chart colours."
+        locked={!pro}
       >
-        <div className="space-y-6">
-          <AppearancePanel role="owner" />
-          <div className="border-t pt-4">
-            <p className="text-xs text-muted-foreground mb-3 font-medium uppercase tracking-wide">Chart Colors</p>
-            <ChartColorsCard />
+        {!pro ? (
+          <UpgradeBanner feature="Appearance & Colour Customisation" locked />
+        ) : (
+          <div className="space-y-6">
+            <AppearancePanel role="owner" />
+            <div className="border-t pt-4">
+              <p className="text-xs text-muted-foreground mb-3 font-medium uppercase tracking-wide">Chart Colors</p>
+              <ChartColorsCard />
+            </div>
           </div>
-        </div>
+        )}
       </AccordionSection>
 
       <AccordionSection
         icon={UserCog}
         iconColor="#f97316"
         title="Trainer App Appearance"
-        description="Set the default look for all trainers. Trainers can also change this themselves."
+        description="Set the default look for all trainers."
+        locked={!pro}
       >
-        <AppearancePanel role="trainer" />
+        {!pro ? (
+          <UpgradeBanner feature="Trainer Appearance Customisation" locked />
+        ) : (
+          <AppearancePanel role="trainer" />
+        )}
       </AccordionSection>
     </div>
   );

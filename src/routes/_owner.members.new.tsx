@@ -1,14 +1,15 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSession, useGym } from "@/lib/useStore";
 import { addMember } from "@/lib/store";
+import { canAddMember, FREE_MEMBER_LIMIT, isPro } from "@/lib/subscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Camera } from "lucide-react";
+import { Camera, Crown } from "lucide-react";
 import { toast } from "sonner";
 import type { PaymentMethod } from "@/lib/types";
 import { compressPhoto } from "@/lib/photo";
@@ -34,6 +35,7 @@ function NewMember() {
   const [cashAmount, setCashAmount] = useState(0);
 
   if (!gym) return null;
+  const memberLimitReached = !canAddMember(gym);
   const plan = gym.plans.find((p) => p.id === planId);
   const total = method === "split" ? upiAmount + cashAmount : method === "upi" ? upiAmount : cashAmount;
 
@@ -60,11 +62,36 @@ function NewMember() {
     navigate({ to: "/members/$id", params: { id: m.id } });
   };
 
+  if (memberLimitReached) {
+    return (
+      <div className="max-w-2xl space-y-4">
+        <div>
+          <h1 className="text-2xl font-bold">New member</h1>
+          <p className="text-sm text-muted-foreground">Register a new member</p>
+        </div>
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-8 text-center space-y-4">
+          <div className="h-14 w-14 rounded-2xl bg-amber-500/20 flex items-center justify-center mx-auto">
+            <Crown className="h-7 w-7 text-amber-500" />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg">Member limit reached</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Your Free plan allows up to <strong>{FREE_MEMBER_LIMIT} members</strong>. You currently have <strong>{gym.members.length}</strong>.
+            </p>
+          </div>
+          <Button asChild className="bg-amber-500 hover:bg-amber-600 text-white">
+            <Link to="/subscription"><Crown className="h-4 w-4 mr-2" /> Upgrade to Pro — Unlimited members</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl space-y-4">
       <div>
         <h1 className="text-2xl font-bold">New member</h1>
-        <p className="text-sm text-muted-foreground">Register a new member</p>
+        <p className="text-sm text-muted-foreground">Register a new member {!isPro(gym) && `(${gym.members.length}/${FREE_MEMBER_LIMIT} used)`}</p>
       </div>
 
       <Card>

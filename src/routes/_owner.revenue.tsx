@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useSession, useGym } from "@/lib/useStore";
 import { addExpense, removeExpense } from "@/lib/store";
+import { isPro } from "@/lib/subscription";
 import { getChartColors } from "@/lib/chartColors";
+import { UpgradeGate } from "@/components/UpgradeGate";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,7 +38,6 @@ function RevenuePage() {
 
   const data = useMemo(() => {
     if (!gym) return null;
-    // Build last 6 months series
     const months: string[] = [];
     const now = new Date();
     for (let i = 5; i >= 0; i--) {
@@ -48,22 +49,11 @@ function RevenuePage() {
     const expenses = gym.expenses ?? [];
 
     const series = months.map((ym) => {
-      const upi = allPayments
-        .filter((p) => p.date.slice(0, 7) === ym)
-        .reduce((s, p) => s + (p.upiAmount || 0), 0);
-      const cash = allPayments
-        .filter((p) => p.date.slice(0, 7) === ym)
-        .reduce((s, p) => s + (p.cashAmount || 0), 0);
+      const upi = allPayments.filter((p) => p.date.slice(0, 7) === ym).reduce((s, p) => s + (p.upiAmount || 0), 0);
+      const cash = allPayments.filter((p) => p.date.slice(0, 7) === ym).reduce((s, p) => s + (p.cashAmount || 0), 0);
       const expUpi = expenses.filter((e) => e.date.slice(0, 7) === ym && e.method === "upi").reduce((s, e) => s + e.amount, 0);
       const expCash = expenses.filter((e) => e.date.slice(0, 7) === ym && e.method === "cash").reduce((s, e) => s + e.amount, 0);
-      return {
-        ym,
-        label: monthLabel(ym),
-        upi, cash, revenue: upi + cash,
-        expense: expUpi + expCash,
-        expUpi, expCash,
-        profit: upi + cash - expUpi - expCash,
-      };
+      return { ym, label: monthLabel(ym), upi, cash, revenue: upi + cash, expense: expUpi + expCash, expUpi, expCash, profit: upi + cash - expUpi - expCash };
     });
 
     const sel = series.find((s) => s.ym === selectedMonth) ?? {
@@ -80,37 +70,23 @@ function RevenuePage() {
       sel.profit = sel.revenue - sel.expense;
     }
 
-    const monthExpenses = expenses
-      .filter((e) => e.date.slice(0, 7) === selectedMonth)
-      .sort((a, b) => b.date.localeCompare(a.date));
-
+    const monthExpenses = expenses.filter((e) => e.date.slice(0, 7) === selectedMonth).sort((a, b) => b.date.localeCompare(a.date));
     return { series, sel, monthExpenses, allMonths: months };
   }, [gym, selectedMonth]);
 
   if (!gym || !data) return null;
-
   const { series, sel, monthExpenses } = data;
 
   const handleAddExpense = (e: React.FormEvent) => {
     e.preventDefault();
     const amt = parseFloat(form.amount);
-    if (!form.title || !amt || amt <= 0) {
-      toast.error("Enter a title and valid amount");
-      return;
-    }
-    addExpense(gym.gymId, {
-      title: form.title.trim(),
-      category: form.category,
-      amount: amt,
-      method: form.method,
-      date: new Date(form.date).toISOString(),
-      notes: form.notes.trim() || undefined,
-    });
+    if (!form.title || !amt || amt <= 0) { toast.error("Enter a title and valid amount"); return; }
+    addExpense(gym.gymId, { title: form.title.trim(), category: form.category, amount: amt, method: form.method, date: new Date(form.date).toISOString(), notes: form.notes.trim() || undefined });
     toast.success("Expense added");
     setForm({ ...form, title: "", amount: "", notes: "" });
   };
 
-  return (
+  const revenueContent = (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
         <div>
@@ -123,7 +99,6 @@ function RevenuePage() {
         </div>
       </div>
 
-      {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat icon={TrendingUp} label="Revenue" value={fmt(sel.revenue)} tone="primary" />
         <Stat icon={TrendingDown} label="Expenses" value={fmt(sel.expense)} tone="warning" />
@@ -131,7 +106,6 @@ function RevenuePage() {
         <Stat icon={Smartphone} label="UPI / Cash" value={`${fmt(sel.upi)} / ${fmt(sel.cash)}`} />
       </div>
 
-      {/* Income breakdown */}
       <Card>
         <CardHeader><CardTitle className="text-base">Income breakdown — {monthLabel(selectedMonth)}</CardTitle></CardHeader>
         <CardContent className="space-y-4">
@@ -152,7 +126,6 @@ function RevenuePage() {
         </CardContent>
       </Card>
 
-      {/* UPI vs Cash chart */}
       <Card>
         <CardHeader><CardTitle className="text-base">Last 6 months — UPI vs Cash</CardTitle></CardHeader>
         <CardContent className="h-52 sm:h-64">
@@ -161,10 +134,7 @@ function RevenuePage() {
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis dataKey="label" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
-              <Tooltip
-                formatter={(value: number, name: string) => [fmt(value), name]}
-                contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)", fontSize: 12 }}
-              />
+              <Tooltip formatter={(value: number, name: string) => [fmt(value), name]} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)", fontSize: 12 }} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
               <Bar dataKey="upi" name="UPI" stackId="rev" fill={chartColors.upi} radius={[0, 0, 0, 0]} />
               <Bar dataKey="cash" name="Cash" stackId="rev" fill={chartColors.cash} radius={[4, 4, 0, 0]} />
@@ -173,7 +143,6 @@ function RevenuePage() {
         </CardContent>
       </Card>
 
-      {/* Profit trend chart */}
       <Card>
         <CardHeader><CardTitle className="text-base">Revenue · Expense · Profit (6 months)</CardTitle></CardHeader>
         <CardContent className="h-52 sm:h-64">
@@ -192,58 +161,37 @@ function RevenuePage() {
         </CardContent>
       </Card>
 
-      {/* Add expense */}
       <Card>
         <CardHeader><CardTitle className="text-base">Add expense</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={handleAddExpense} className="space-y-3">
-            <div>
-              <Label>Title</Label>
-              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Electricity bill" />
-            </div>
+            <div><Label>Title</Label><Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Electricity bill" /></div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label>Category</Label>
                 <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {["Rent", "Salary", "Utilities", "Equipment", "Maintenance", "Marketing", "Other"].map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
+                  <SelectContent>{["Rent", "Salary", "Utilities", "Equipment", "Maintenance", "Marketing", "Other"].map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div>
                 <Label>Method</Label>
                 <Select value={form.method} onValueChange={(v: "upi" | "cash") => setForm({ ...form, method: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="upi">UPI</SelectItem>
-                    <SelectItem value="cash">Cash</SelectItem>
-                  </SelectContent>
+                  <SelectContent><SelectItem value="upi">UPI</SelectItem><SelectItem value="cash">Cash</SelectItem></SelectContent>
                 </Select>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Amount (₹)</Label>
-                <Input type="number" min="0" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
-              </div>
-              <div>
-                <Label>Date</Label>
-                <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
-              </div>
+              <div><Label>Amount (₹)</Label><Input type="number" min="0" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} /></div>
+              <div><Label>Date</Label><Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></div>
             </div>
-            <div>
-              <Label>Notes (optional)</Label>
-              <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-            </div>
+            <div><Label>Notes (optional)</Label><Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></div>
             <Button type="submit" className="w-full">Add expense</Button>
           </form>
         </CardContent>
       </Card>
 
-      {/* Expenses list */}
       <Card>
         <CardHeader><CardTitle className="text-base">Expenses — {monthLabel(selectedMonth)}</CardTitle></CardHeader>
         <CardContent className="p-0">
@@ -259,9 +207,7 @@ function RevenuePage() {
                       <span className="text-xs px-1.5 py-0.5 rounded bg-muted shrink-0">{e.category}</span>
                       <span className="text-xs uppercase text-muted-foreground shrink-0">{e.method}</span>
                     </div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {new Date(e.date).toLocaleDateString("en-IN")}
-                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{new Date(e.date).toLocaleDateString("en-IN")}</div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <span className="font-semibold text-sm">{fmt(e.amount)}</span>
@@ -277,6 +223,16 @@ function RevenuePage() {
       </Card>
     </div>
   );
+
+  return (
+    <UpgradeGate
+      feature="Revenue & Expense Tracking"
+      description="Upgrade to Pro to view income, expenses, profit trends and charts."
+      locked={!isPro(gym)}
+    >
+      {revenueContent}
+    </UpgradeGate>
+  );
 }
 
 function Stat({ icon: Icon, label, value, tone }: { icon: any; label: string; value: any; tone?: "primary" | "warning" | "success" | "danger" }) {
@@ -289,9 +245,7 @@ function Stat({ icon: Icon, label, value, tone }: { icon: any; label: string; va
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center gap-3">
-          <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${toneClass}`}>
-            <Icon className="h-5 w-5" />
-          </div>
+          <div className={`h-10 w-10 rounded-lg flex items-center justify-center ${toneClass}`}><Icon className="h-5 w-5" /></div>
           <div className="min-w-0">
             <div className="text-xs text-muted-foreground">{label}</div>
             <div className="text-base md:text-lg font-bold truncate">{value}</div>

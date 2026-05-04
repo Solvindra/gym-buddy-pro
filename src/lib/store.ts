@@ -128,6 +128,7 @@ export function signupGym(input: {
     plans: input.plans,
     members: [],
     trainers: [],
+    subscriptionTier: "free",
   };
   saveGyms(gyms);
   return { ok: true, gymId };
@@ -172,6 +173,16 @@ export function verifyOtpAndReset(gymId: string, otp: string, newPassword: strin
   updateGym(gymId.toUpperCase(), (g) => ({ ...g, password: newPassword }));
   localStorage.removeItem(OTP_KEY);
   return true;
+}
+
+// ----- Subscription -----
+
+export function upgradeSubscription(gymId: string): boolean {
+  return updateGym(gymId, (g) => ({ ...g, subscriptionTier: "pro" }));
+}
+
+export function downgradeSubscription(gymId: string): boolean {
+  return updateGym(gymId, (g) => ({ ...g, subscriptionTier: "free" }));
 }
 
 // ----- Plans -----
