@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSession, useGym } from "@/lib/useStore";
 import { getMemberStatus, daysRemaining } from "@/lib/store";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Search, Users, UserCheck } from "lucide-react";
 import { useState, useMemo } from "react";
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
+  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  CartesianGrid, Dot,
 } from "recharts";
 
 export const Route = createFileRoute("/_owner/members/")({
@@ -18,35 +19,32 @@ export const Route = createFileRoute("/_owner/members/")({
 
 type FootfallMode = "monthly-joiners" | "daily-attendance";
 
-const fmt = (n: number) => String(n);
+const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function FootfallCard() {
   const session = useSession();
   const gym = useGym(session?.gymId);
   const [mode, setMode] = useState<FootfallMode>("monthly-joiners");
+  const now = new Date();
 
-  const [selectedMonth, setSelectedMonth] = useState(() =>
-    new Date().toISOString().slice(0, 7)
-  );
+  const [selectedYear, setSelectedYear] = useState(() => String(now.getFullYear()));
+  const [selectedMonth, setSelectedMonth] = useState(() => now.toISOString().slice(0, 7));
+
+  const years = useMemo(() => {
+    const y = now.getFullYear();
+    return [String(y), String(y - 1), String(y - 2)];
+  }, []);
 
   const chartData = useMemo(() => {
     if (!gym) return [];
 
     if (mode === "monthly-joiners") {
-      // Last 12 months — count members whose createdAt falls in that month
-      const months: string[] = [];
-      const now = new Date();
-      for (let i = 11; i >= 0; i--) {
-        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
-      }
-      return months.map((ym) => {
-        const label = new Date(ym + "-01").toLocaleDateString("en-IN", { month: "short", year: "2-digit" });
+      return MONTHS_SHORT.map((label, i) => {
+        const ym = `${selectedYear}-${String(i + 1).padStart(2, "0")}`;
         const count = gym.members.filter((m) => m.createdAt.slice(0, 7) === ym).length;
         return { label, count };
       });
     } else {
-      // Daily attendance for selected month
       const [y, mo] = selectedMonth.split("-").map(Number);
       const daysInMonth = new Date(y, mo, 0).getDate();
       return Array.from({ length: daysInMonth }, (_, i) => {
@@ -58,73 +56,85 @@ function FootfallCard() {
         return { label: String(i + 1), count };
       });
     }
-  }, [gym, mode, selectedMonth]);
+  }, [gym, mode, selectedYear, selectedMonth]);
 
   if (!gym) return null;
 
-  const totalJoined = gym.members.filter((m) => m.createdAt.slice(0, 7) === new Date().toISOString().slice(0, 7)).length;
-  const today = new Date().toISOString().slice(0, 10);
-  const todayCount = gym.members.filter((m) => m.attendance.some((a) => a.startsWith(today))).length;
+  const thisMonth = now.toISOString().slice(0, 7);
+  const today = now.toISOString().slice(0, 10);
+  const statValue = mode === "monthly-joiners"
+    ? gym.members.filter((m) => m.createdAt.slice(0, 7) === thisMonth).length
+    : gym.members.filter((m) => m.attendance.some((a) => a.startsWith(today))).length;
+  const statLabel = mode === "monthly-joiners" ? "joined this month" : "checked in today";
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-              {mode === "monthly-joiners"
-                ? <Users className="h-4 w-4" />
-                : <UserCheck className="h-4 w-4" />}
+    <Card className="overflow-hidden">
+      {/* Header */}
+      <div className="px-4 pt-4 pb-3 space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            {mode === "monthly-joiners" ? <Users className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
+          </div>
+          <div>
+            <div className="font-semibold text-sm leading-tight">
+              {mode === "monthly-joiners" ? "Monthly Joiners" : "Daily Attendance"}
             </div>
-            <div>
-              <CardTitle className="text-base">
-                {mode === "monthly-joiners" ? "Monthly Joiners" : "Daily Attendance"}
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">
-                {mode === "monthly-joiners"
-                  ? `${totalJoined} joined this month`
-                  : `${todayCount} checked in today`}
-              </p>
+            <div className="text-xs text-muted-foreground">
+              <span className="font-medium text-foreground">{statValue}</span> {statLabel}
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {mode === "daily-attendance" && (
-              <Input
-                type="month"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                className="h-8 text-xs w-36"
-              />
-            )}
-            <Select value={mode} onValueChange={(v) => setMode(v as FootfallMode)}>
-              <SelectTrigger className="h-8 text-xs w-44">
+        {/* Controls row */}
+        <div className="flex gap-2 flex-wrap">
+          <Select value={mode} onValueChange={(v) => setMode(v as FootfallMode)}>
+            <SelectTrigger className="h-8 text-xs flex-1 min-w-36">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="monthly-joiners">Monthly Joiners</SelectItem>
+              <SelectItem value="daily-attendance">Daily Attendance</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {mode === "monthly-joiners" ? (
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="h-8 text-xs w-24">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="monthly-joiners">Monthly Joiners</SelectItem>
-                <SelectItem value="daily-attendance">Daily Attendance</SelectItem>
+                {years.map((y) => (
+                  <SelectItem key={y} value={y}>{y}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
-          </div>
+          ) : (
+            <Input
+              type="month"
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+              className="h-8 text-xs w-32"
+            />
+          )}
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="h-44 pt-0">
+      {/* Chart */}
+      <div className="h-48 px-1 pb-3">
         {chartData.every((d) => d.count === 0) ? (
           <div className="h-full flex items-center justify-center text-sm text-muted-foreground">
             No data for this period
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
+            <LineChart data={chartData} margin={{ top: 4, right: 12, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
               <XAxis
                 dataKey="label"
                 tick={{ fontSize: 10 }}
                 interval={mode === "daily-attendance" ? 4 : 0}
               />
-              <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} allowDecimals={false} />
+              <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
               <Tooltip
                 formatter={(v: number) => [v, mode === "monthly-joiners" ? "Joined" : "Attended"]}
                 contentStyle={{
@@ -135,17 +145,18 @@ function FootfallCard() {
                   fontSize: 12,
                 }}
               />
-              <Bar
+              <Line
+                type="monotone"
                 dataKey="count"
-                name={mode === "monthly-joiners" ? "Joined" : "Attended"}
-                fill="var(--primary)"
-                radius={[4, 4, 0, 0]}
-                maxBarSize={32}
+                stroke="var(--primary)"
+                strokeWidth={2}
+                dot={<Dot r={3} fill="var(--primary)" stroke="var(--primary)" />}
+                activeDot={{ r: 5 }}
               />
-            </BarChart>
+            </LineChart>
           </ResponsiveContainer>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }
