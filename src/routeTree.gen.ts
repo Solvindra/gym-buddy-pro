@@ -27,6 +27,7 @@ import { Route as TrainerTrainerMembersRouteImport } from './routes/_trainer.tra
 import { Route as TrainerTrainerAttendanceRouteImport } from './routes/_trainer.trainer.attendance'
 import { Route as OwnerMembersNewRouteImport } from './routes/_owner.members.new'
 import { Route as OwnerMembersIdRouteImport } from './routes/_owner.members.$id'
+import { Route as TrainerTrainerMembersIndexRouteImport } from './routes/_trainer.trainer.members.index'
 import { Route as TrainerTrainerMembersNewRouteImport } from './routes/_trainer.trainer.members.new'
 import { Route as TrainerTrainerMembersIdRouteImport } from './routes/_trainer.trainer.members.$id'
 
@@ -119,6 +120,12 @@ const OwnerMembersIdRoute = OwnerMembersIdRouteImport.update({
   path: '/members/$id',
   getParentRoute: () => OwnerRoute,
 } as any)
+const TrainerTrainerMembersIndexRoute =
+  TrainerTrainerMembersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => TrainerTrainerMembersRoute,
+  } as any)
 const TrainerTrainerMembersNewRoute =
   TrainerTrainerMembersNewRouteImport.update({
     id: '/new',
@@ -150,6 +157,7 @@ export interface FileRoutesByFullPath {
   '/members/': typeof OwnerMembersIndexRoute
   '/trainer/members/$id': typeof TrainerTrainerMembersIdRoute
   '/trainer/members/new': typeof TrainerTrainerMembersNewRoute
+  '/trainer/members/': typeof TrainerTrainerMembersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -165,11 +173,11 @@ export interface FileRoutesByTo {
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
-  '/trainer/members': typeof TrainerTrainerMembersRouteWithChildren
   '/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/members': typeof OwnerMembersIndexRoute
   '/trainer/members/$id': typeof TrainerTrainerMembersIdRoute
   '/trainer/members/new': typeof TrainerTrainerMembersNewRoute
+  '/trainer/members': typeof TrainerTrainerMembersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -193,6 +201,7 @@ export interface FileRoutesById {
   '/_owner/members/': typeof OwnerMembersIndexRoute
   '/_trainer/trainer/members/$id': typeof TrainerTrainerMembersIdRoute
   '/_trainer/trainer/members/new': typeof TrainerTrainerMembersNewRoute
+  '/_trainer/trainer/members/': typeof TrainerTrainerMembersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -215,6 +224,7 @@ export interface FileRouteTypes {
     | '/members/'
     | '/trainer/members/$id'
     | '/trainer/members/new'
+    | '/trainer/members/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -230,11 +240,11 @@ export interface FileRouteTypes {
     | '/members/$id'
     | '/members/new'
     | '/trainer/attendance'
-    | '/trainer/members'
     | '/trainer/settings'
     | '/members'
     | '/trainer/members/$id'
     | '/trainer/members/new'
+    | '/trainer/members'
   id:
     | '__root__'
     | '/'
@@ -257,6 +267,7 @@ export interface FileRouteTypes {
     | '/_owner/members/'
     | '/_trainer/trainer/members/$id'
     | '/_trainer/trainer/members/new'
+    | '/_trainer/trainer/members/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -396,6 +407,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OwnerMembersIdRouteImport
       parentRoute: typeof OwnerRoute
     }
+    '/_trainer/trainer/members/': {
+      id: '/_trainer/trainer/members/'
+      path: '/'
+      fullPath: '/trainer/members/'
+      preLoaderRoute: typeof TrainerTrainerMembersIndexRouteImport
+      parentRoute: typeof TrainerTrainerMembersRoute
+    }
     '/_trainer/trainer/members/new': {
       id: '/_trainer/trainer/members/new'
       path: '/new'
@@ -442,11 +460,13 @@ const OwnerRouteWithChildren = OwnerRoute._addFileChildren(OwnerRouteChildren)
 interface TrainerTrainerMembersRouteChildren {
   TrainerTrainerMembersIdRoute: typeof TrainerTrainerMembersIdRoute
   TrainerTrainerMembersNewRoute: typeof TrainerTrainerMembersNewRoute
+  TrainerTrainerMembersIndexRoute: typeof TrainerTrainerMembersIndexRoute
 }
 
 const TrainerTrainerMembersRouteChildren: TrainerTrainerMembersRouteChildren = {
   TrainerTrainerMembersIdRoute: TrainerTrainerMembersIdRoute,
   TrainerTrainerMembersNewRoute: TrainerTrainerMembersNewRoute,
+  TrainerTrainerMembersIndexRoute: TrainerTrainerMembersIndexRoute,
 }
 
 const TrainerTrainerMembersRouteWithChildren =
