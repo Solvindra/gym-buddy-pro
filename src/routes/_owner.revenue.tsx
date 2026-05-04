@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useSession, useGym } from "@/lib/useStore";
 import { addExpense, removeExpense } from "@/lib/store";
+import { getChartColors } from "@/lib/chartColors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,6 +31,7 @@ function RevenuePage() {
   const session = useSession();
   const gym = useGym(session?.gymId);
   const [selectedMonth, setSelectedMonth] = useState(() => new Date().toISOString().slice(0, 7));
+  const chartColors = getChartColors();
   const [form, setForm] = useState({ title: "", category: "Rent", amount: "", method: "cash" as "upi" | "cash", date: new Date().toISOString().slice(0, 10), notes: "" });
 
   const data = useMemo(() => {
@@ -164,8 +166,8 @@ function RevenuePage() {
                   contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }}
                 />
                 <Legend />
-                <Bar dataKey="upi" name="UPI" stackId="rev" fill="var(--primary)" radius={[0, 0, 0, 0]} />
-                <Bar dataKey="cash" name="Cash" stackId="rev" fill="var(--success)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="upi" name="UPI" stackId="rev" fill={chartColors.upi} radius={[0, 0, 0, 0]} />
+                <Bar dataKey="cash" name="Cash" stackId="rev" fill={chartColors.cash} radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -183,9 +185,9 @@ function RevenuePage() {
               <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
               <Tooltip formatter={(v: number, n: string) => [fmt(v), n]} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }} />
               <Legend />
-              <Bar dataKey="revenue" name="Revenue" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="expense" name="Expense" fill="var(--warning)" radius={[6, 6, 0, 0]} />
-              <Bar dataKey="profit" name="Profit" fill="var(--success)" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="revenue" name="Revenue" fill={chartColors.revenue} radius={[6, 6, 0, 0]} />
+              <Bar dataKey="expense" name="Expense" fill={chartColors.expense} radius={[6, 6, 0, 0]} />
+              <Bar dataKey="profit" name="Profit" fill={chartColors.profit} radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppearancePanel } from "@/components/AppearancePanel";
-import { UserCog, User } from "lucide-react";
+import { ChartColorsCard } from "@/components/ChartColorsCard";
+import { UserCog, User, BarChart2 } from "lucide-react";
 
 export const Route = createFileRoute("/_owner/settings")({
   component: SettingsPage,
@@ -26,6 +27,24 @@ function SettingsPage() {
           </div>
         </div>
         <AppearancePanel role="owner" />
+      </section>
+
+      <div className="border-t" />
+
+      {/* Chart colors */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-md bg-primary/10 text-primary flex items-center justify-center">
+            <BarChart2 className="h-4 w-4" />
+          </div>
+          <div>
+            <h2 className="font-semibold leading-tight">Chart Colors</h2>
+            <p className="text-xs text-muted-foreground">
+              Customize bar colors shown in the Revenue graphs.
+            </p>
+          </div>
+        </div>
+        <ChartColorsCard />
       </section>
 
       <div className="border-t" />
