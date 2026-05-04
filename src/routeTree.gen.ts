@@ -27,6 +27,8 @@ import { Route as TrainerTrainerMembersRouteImport } from './routes/_trainer.tra
 import { Route as TrainerTrainerAttendanceRouteImport } from './routes/_trainer.trainer.attendance'
 import { Route as OwnerMembersNewRouteImport } from './routes/_owner.members.new'
 import { Route as OwnerMembersIdRouteImport } from './routes/_owner.members.$id'
+import { Route as TrainerTrainerMembersNewRouteImport } from './routes/_trainer.trainer.members.new'
+import { Route as TrainerTrainerMembersIdRouteImport } from './routes/_trainer.trainer.members.$id'
 
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
@@ -117,6 +119,17 @@ const OwnerMembersIdRoute = OwnerMembersIdRouteImport.update({
   path: '/members/$id',
   getParentRoute: () => OwnerRoute,
 } as any)
+const TrainerTrainerMembersNewRoute =
+  TrainerTrainerMembersNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => TrainerTrainerMembersRoute,
+  } as any)
+const TrainerTrainerMembersIdRoute = TrainerTrainerMembersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => TrainerTrainerMembersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,9 +145,11 @@ export interface FileRoutesByFullPath {
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
-  '/trainer/members': typeof TrainerTrainerMembersRoute
+  '/trainer/members': typeof TrainerTrainerMembersRouteWithChildren
   '/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/members/': typeof OwnerMembersIndexRoute
+  '/trainer/members/$id': typeof TrainerTrainerMembersIdRoute
+  '/trainer/members/new': typeof TrainerTrainerMembersNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,9 +165,11 @@ export interface FileRoutesByTo {
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
-  '/trainer/members': typeof TrainerTrainerMembersRoute
+  '/trainer/members': typeof TrainerTrainerMembersRouteWithChildren
   '/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/members': typeof OwnerMembersIndexRoute
+  '/trainer/members/$id': typeof TrainerTrainerMembersIdRoute
+  '/trainer/members/new': typeof TrainerTrainerMembersNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -171,9 +188,11 @@ export interface FileRoutesById {
   '/_owner/members/$id': typeof OwnerMembersIdRoute
   '/_owner/members/new': typeof OwnerMembersNewRoute
   '/_trainer/trainer/attendance': typeof TrainerTrainerAttendanceRoute
-  '/_trainer/trainer/members': typeof TrainerTrainerMembersRoute
+  '/_trainer/trainer/members': typeof TrainerTrainerMembersRouteWithChildren
   '/_trainer/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/_owner/members/': typeof OwnerMembersIndexRoute
+  '/_trainer/trainer/members/$id': typeof TrainerTrainerMembersIdRoute
+  '/_trainer/trainer/members/new': typeof TrainerTrainerMembersNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -194,6 +213,8 @@ export interface FileRouteTypes {
     | '/trainer/members'
     | '/trainer/settings'
     | '/members/'
+    | '/trainer/members/$id'
+    | '/trainer/members/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -212,6 +233,8 @@ export interface FileRouteTypes {
     | '/trainer/members'
     | '/trainer/settings'
     | '/members'
+    | '/trainer/members/$id'
+    | '/trainer/members/new'
   id:
     | '__root__'
     | '/'
@@ -232,6 +255,8 @@ export interface FileRouteTypes {
     | '/_trainer/trainer/members'
     | '/_trainer/trainer/settings'
     | '/_owner/members/'
+    | '/_trainer/trainer/members/$id'
+    | '/_trainer/trainer/members/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -371,6 +396,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OwnerMembersIdRouteImport
       parentRoute: typeof OwnerRoute
     }
+    '/_trainer/trainer/members/new': {
+      id: '/_trainer/trainer/members/new'
+      path: '/new'
+      fullPath: '/trainer/members/new'
+      preLoaderRoute: typeof TrainerTrainerMembersNewRouteImport
+      parentRoute: typeof TrainerTrainerMembersRoute
+    }
+    '/_trainer/trainer/members/$id': {
+      id: '/_trainer/trainer/members/$id'
+      path: '/$id'
+      fullPath: '/trainer/members/$id'
+      preLoaderRoute: typeof TrainerTrainerMembersIdRouteImport
+      parentRoute: typeof TrainerTrainerMembersRoute
+    }
   }
 }
 
@@ -400,15 +439,30 @@ const OwnerRouteChildren: OwnerRouteChildren = {
 
 const OwnerRouteWithChildren = OwnerRoute._addFileChildren(OwnerRouteChildren)
 
+interface TrainerTrainerMembersRouteChildren {
+  TrainerTrainerMembersIdRoute: typeof TrainerTrainerMembersIdRoute
+  TrainerTrainerMembersNewRoute: typeof TrainerTrainerMembersNewRoute
+}
+
+const TrainerTrainerMembersRouteChildren: TrainerTrainerMembersRouteChildren = {
+  TrainerTrainerMembersIdRoute: TrainerTrainerMembersIdRoute,
+  TrainerTrainerMembersNewRoute: TrainerTrainerMembersNewRoute,
+}
+
+const TrainerTrainerMembersRouteWithChildren =
+  TrainerTrainerMembersRoute._addFileChildren(
+    TrainerTrainerMembersRouteChildren,
+  )
+
 interface TrainerRouteChildren {
   TrainerTrainerAttendanceRoute: typeof TrainerTrainerAttendanceRoute
-  TrainerTrainerMembersRoute: typeof TrainerTrainerMembersRoute
+  TrainerTrainerMembersRoute: typeof TrainerTrainerMembersRouteWithChildren
   TrainerTrainerSettingsRoute: typeof TrainerTrainerSettingsRoute
 }
 
 const TrainerRouteChildren: TrainerRouteChildren = {
   TrainerTrainerAttendanceRoute: TrainerTrainerAttendanceRoute,
-  TrainerTrainerMembersRoute: TrainerTrainerMembersRoute,
+  TrainerTrainerMembersRoute: TrainerTrainerMembersRouteWithChildren,
   TrainerTrainerSettingsRoute: TrainerTrainerSettingsRoute,
 }
 
