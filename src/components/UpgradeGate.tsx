@@ -15,7 +15,7 @@ export function UpgradeGate({ feature, description, children, locked }: UpgradeG
 
   return (
     <div className="relative">
-      <div className="pointer-events-none select-none opacity-30 blur-[2px]">
+      <div className="pointer-events-none select-none opacity-20">
         {children}
       </div>
       <div className="absolute inset-0 flex items-center justify-center z-10">

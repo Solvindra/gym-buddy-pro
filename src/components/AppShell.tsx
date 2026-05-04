@@ -248,7 +248,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       )}
 
       {/* ── Mobile top bar ── */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-30 bg-card/95 backdrop-blur-md border-b h-14 flex items-center justify-between px-4">
+      <div className="md:hidden fixed top-0 inset-x-0 z-30 bg-card border-b h-14 flex items-center justify-between px-4">
         <button
           onClick={() => setMobileOpen(true)}
           className="h-9 w-9 rounded-xl flex items-center justify-center hover:bg-muted transition-colors"
@@ -273,8 +273,8 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       </div>
 
       {/* ── Mobile bottom tab bar ── */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur-md border-t">
-        <nav className="flex items-center justify-around px-2 py-1">
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card border-t">
+        <nav className="flex items-center justify-around px-1 py-1.5">
           {nav.map((n) => {
             const active = path === n.to || path.startsWith(n.to + "/");
             const Icon = n.icon;
@@ -282,19 +282,19 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
               <Link
                 key={n.to}
                 to={n.to}
-                className="flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all min-w-0"
+                className="flex flex-col items-center gap-0.5 px-1 py-0.5 min-w-0"
               >
                 <span
-                  className="h-9 w-9 rounded-xl flex items-center justify-center transition-all"
+                  className="h-8 w-8 rounded-lg flex items-center justify-center"
                   style={{
-                    background: active ? n.color + "25" : "transparent",
+                    background: active ? n.color + "22" : "transparent",
                     color: active ? n.color : "var(--muted-foreground)",
                   }}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="h-[18px] w-[18px]" />
                 </span>
                 <span
-                  className="text-[10px] font-medium truncate"
+                  className="text-[9px] font-semibold leading-none"
                   style={{ color: active ? n.color : "var(--muted-foreground)" }}
                 >
                   {n.label}
