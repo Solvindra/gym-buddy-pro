@@ -273,7 +273,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       {/* ── Mobile bottom tab bar ── */}
       <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card/95 backdrop-blur-md border-t">
         <nav className="flex items-center justify-around px-2 py-1">
-          {nav.slice(0, 5).map((n) => {
+          {nav.map((n) => {
             const active = path === n.to || path.startsWith(n.to + "/");
             const Icon = n.icon;
             return (
