@@ -124,165 +124,157 @@ function RevenuePage() {
       </div>
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Stat icon={TrendingUp} label="Revenue" value={fmt(sel.revenue)} tone="primary" />
         <Stat icon={TrendingDown} label="Expenses" value={fmt(sel.expense)} tone="warning" />
         <Stat icon={Wallet} label="Profit" value={fmt(sel.profit)} tone={sel.profit >= 0 ? "success" : "danger"} />
         <Stat icon={Smartphone} label="UPI / Cash" value={`${fmt(sel.upi)} / ${fmt(sel.cash)}`} />
       </div>
 
-      {/* Split breakdown */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Income breakdown — {monthLabel(selectedMonth)}</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <SplitRow icon={Smartphone} label="UPI" amount={sel.upi} total={sel.revenue} colorClass="bg-primary" />
-            <SplitRow icon={Banknote} label="Cash" amount={sel.cash} total={sel.revenue} colorClass="bg-success" />
-            <div className="pt-2 border-t flex justify-between text-sm">
-              <span className="text-muted-foreground">Total revenue</span>
-              <span className="font-semibold">{fmt(sel.revenue)}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Total expenses</span>
-              <span className="font-semibold text-warning">- {fmt(sel.expense)}</span>
-            </div>
-            <div className="flex justify-between text-base pt-2 border-t">
-              <span className="font-medium">Net profit</span>
-              <span className={`font-bold ${sel.profit >= 0 ? "text-success" : "text-destructive"}`}>{fmt(sel.profit)}</span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader><CardTitle className="text-base">Last 6 months — UPI vs Cash</CardTitle></CardHeader>
-          <CardContent className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={series} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
-                <Tooltip
-                  formatter={(value: number, name: string) => [fmt(value), name]}
-                  contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }}
-                />
-                <Legend />
-                <Bar dataKey="upi" name="UPI" stackId="rev" fill={chartColors.upi} radius={[0, 0, 0, 0]} />
-                <Bar dataKey="cash" name="Cash" stackId="rev" fill={chartColors.cash} radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Profit trend */}
+      {/* Income breakdown */}
       <Card>
-        <CardHeader><CardTitle className="text-base">Revenue · Expense · Profit (6 months)</CardTitle></CardHeader>
-        <CardContent className="h-72">
+        <CardHeader><CardTitle className="text-base">Income breakdown — {monthLabel(selectedMonth)}</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+          <SplitRow icon={Smartphone} label="UPI" amount={sel.upi} total={sel.revenue} colorClass="bg-primary" />
+          <SplitRow icon={Banknote} label="Cash" amount={sel.cash} total={sel.revenue} colorClass="bg-success" />
+          <div className="pt-2 border-t flex justify-between text-sm">
+            <span className="text-muted-foreground">Total revenue</span>
+            <span className="font-semibold">{fmt(sel.revenue)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Total expenses</span>
+            <span className="font-semibold text-warning">- {fmt(sel.expense)}</span>
+          </div>
+          <div className="flex justify-between text-base pt-2 border-t">
+            <span className="font-medium">Net profit</span>
+            <span className={`font-bold ${sel.profit >= 0 ? "text-success" : "text-destructive"}`}>{fmt(sel.profit)}</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* UPI vs Cash chart */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Last 6 months — UPI vs Cash</CardTitle></CardHeader>
+        <CardContent className="h-52 sm:h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={series} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
+            <BarChart data={series} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-              <XAxis dataKey="label" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
-              <Tooltip formatter={(v: number, n: string) => [fmt(v), n]} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)" }} />
-              <Legend />
-              <Bar dataKey="revenue" name="Revenue" fill={chartColors.revenue} radius={[6, 6, 0, 0]} />
-              <Bar dataKey="expense" name="Expense" fill={chartColors.expense} radius={[6, 6, 0, 0]} />
-              <Bar dataKey="profit" name="Profit" fill={chartColors.profit} radius={[6, 6, 0, 0]} />
+              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
+              <Tooltip
+                formatter={(value: number, name: string) => [fmt(value), name]}
+                contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)", fontSize: 12 }}
+              />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Bar dataKey="upi" name="UPI" stackId="rev" fill={chartColors.upi} radius={[0, 0, 0, 0]} />
+              <Bar dataKey="cash" name="Cash" stackId="rev" fill={chartColors.cash} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
       </Card>
 
-      {/* Add expense + list */}
-      <div className="grid lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-1">
-          <CardHeader><CardTitle className="text-base">Add expense</CardTitle></CardHeader>
-          <CardContent>
-            <form onSubmit={handleAddExpense} className="space-y-3">
-              <div>
-                <Label>Title</Label>
-                <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Electricity bill" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Category</Label>
-                  <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {["Rent", "Salary", "Utilities", "Equipment", "Maintenance", "Marketing", "Other"].map((c) => (
-                        <SelectItem key={c} value={c}>{c}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Method</Label>
-                  <Select value={form.method} onValueChange={(v: "upi" | "cash") => setForm({ ...form, method: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="upi">UPI</SelectItem>
-                      <SelectItem value="cash">Cash</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Amount (₹)</Label>
-                  <Input type="number" min="0" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
-                </div>
-                <div>
-                  <Label>Date</Label>
-                  <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
-                </div>
-              </div>
-              <div>
-                <Label>Notes (optional)</Label>
-                <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-              </div>
-              <Button type="submit" className="w-full">Add expense</Button>
-            </form>
-          </CardContent>
-        </Card>
+      {/* Profit trend chart */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Revenue · Expense · Profit (6 months)</CardTitle></CardHeader>
+        <CardContent className="h-52 sm:h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={series} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+              <XAxis dataKey="label" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `₹${v >= 1000 ? `${Math.round(v / 1000)}k` : v}`} />
+              <Tooltip formatter={(v: number, n: string) => [fmt(v), n]} contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, color: "var(--foreground)", fontSize: 12 }} />
+              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <Bar dataKey="revenue" name="Revenue" fill={chartColors.revenue} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="expense" name="Expense" fill={chartColors.expense} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="profit" name="Profit" fill={chartColors.profit} radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-        <Card className="lg:col-span-2">
-          <CardHeader><CardTitle className="text-base">Expenses — {monthLabel(selectedMonth)}</CardTitle></CardHeader>
-          <CardContent>
-            {monthExpenses.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-8 text-center">No expenses recorded for this month.</p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Method</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {monthExpenses.map((e) => (
-                    <TableRow key={e.id}>
-                      <TableCell className="text-xs">{new Date(e.date).toLocaleDateString("en-IN")}</TableCell>
-                      <TableCell className="font-medium">{e.title}</TableCell>
-                      <TableCell><span className="text-xs px-2 py-0.5 rounded bg-muted">{e.category}</span></TableCell>
-                      <TableCell className="uppercase text-xs">{e.method}</TableCell>
-                      <TableCell className="text-right font-medium">{fmt(e.amount)}</TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => { removeExpense(gym.gymId, e.id); toast.success("Removed"); }}>
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      {/* Add expense */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Add expense</CardTitle></CardHeader>
+        <CardContent>
+          <form onSubmit={handleAddExpense} className="space-y-3">
+            <div>
+              <Label>Title</Label>
+              <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Electricity bill" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Category</Label>
+                <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {["Rent", "Salary", "Utilities", "Equipment", "Maintenance", "Marketing", "Other"].map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Method</Label>
+                <Select value={form.method} onValueChange={(v: "upi" | "cash") => setForm({ ...form, method: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="upi">UPI</SelectItem>
+                    <SelectItem value="cash">Cash</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>Amount (₹)</Label>
+                <Input type="number" min="0" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
+              </div>
+              <div>
+                <Label>Date</Label>
+                <Input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} />
+              </div>
+            </div>
+            <div>
+              <Label>Notes (optional)</Label>
+              <Input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
+            </div>
+            <Button type="submit" className="w-full">Add expense</Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      {/* Expenses list */}
+      <Card>
+        <CardHeader><CardTitle className="text-base">Expenses — {monthLabel(selectedMonth)}</CardTitle></CardHeader>
+        <CardContent className="p-0">
+          {monthExpenses.length === 0 ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">No expenses recorded for this month.</p>
+          ) : (
+            <div className="divide-y">
+              {monthExpenses.map((e) => (
+                <div key={e.id} className="flex items-center gap-3 px-4 py-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-medium text-sm truncate">{e.title}</span>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-muted shrink-0">{e.category}</span>
+                      <span className="text-xs uppercase text-muted-foreground shrink-0">{e.method}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {new Date(e.date).toLocaleDateString("en-IN")}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="font-semibold text-sm">{fmt(e.amount)}</span>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => { removeExpense(gym.gymId, e.id); toast.success("Removed"); }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

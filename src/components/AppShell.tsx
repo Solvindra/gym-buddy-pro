@@ -305,8 +305,8 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       </div>
 
       {/* ── Main content ── */}
-      <main className="flex-1 min-w-0 md:ml-64">
-        <div className="max-w-6xl mx-auto p-4 pt-20 pb-28 md:pt-8 md:pb-8 md:px-8">
+      <main className="flex-1 min-w-0 md:ml-64 overflow-x-hidden">
+        <div className="max-w-6xl mx-auto p-4 pt-20 pb-28 md:pt-8 md:pb-8 md:px-8 overflow-x-hidden">
           <Outlet />
         </div>
       </main>
