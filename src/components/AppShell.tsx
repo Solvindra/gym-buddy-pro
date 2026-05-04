@@ -3,6 +3,7 @@ import { Outlet, Link, useNavigate, useRouterState } from "@tanstack/react-route
 import { useSession, useGym } from "@/lib/useStore";
 import { logout } from "@/lib/store";
 import { initDarkMode } from "@/lib/theme";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
@@ -41,6 +42,13 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
 
   useEffect(() => {
     initDarkMode();
+    const onStorageFull = () => {
+      toast.error("Storage full! Remove member photos to free up space.", {
+        duration: 6000,
+      });
+    };
+    window.addEventListener("gym-storage-full", onStorageFull);
+    return () => window.removeEventListener("gym-storage-full", onStorageFull);
   }, []);
 
   if (!session || !gym) return null;

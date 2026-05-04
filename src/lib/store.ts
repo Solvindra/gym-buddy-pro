@@ -31,21 +31,32 @@ export function getGyms(): Record<string, Gym> {
   return safeParse(localStorage.getItem(GYMS_KEY), {} as Record<string, Gym>);
 }
 
-function saveGyms(gyms: Record<string, Gym>) {
-  localStorage.setItem(GYMS_KEY, JSON.stringify(gyms));
-  emit();
+function saveGyms(gyms: Record<string, Gym>): boolean {
+  try {
+    localStorage.setItem(GYMS_KEY, JSON.stringify(gyms));
+    emit();
+    return true;
+  } catch (e) {
+    if (
+      e instanceof DOMException &&
+      (e.name === "QuotaExceededError" || e.name === "NS_ERROR_DOM_QUOTA_REACHED")
+    ) {
+      window.dispatchEvent(new CustomEvent("gym-storage-full"));
+    }
+    return false;
+  }
 }
 
 export function getGym(gymId: string): Gym | null {
   return getGyms()[gymId] ?? null;
 }
 
-export function updateGym(gymId: string, updater: (g: Gym) => Gym) {
+export function updateGym(gymId: string, updater: (g: Gym) => Gym): boolean {
   const gyms = getGyms();
   const g = gyms[gymId];
-  if (!g) return;
+  if (!g) return false;
   gyms[gymId] = updater(g);
-  saveGyms(gyms);
+  return saveGyms(gyms);
 }
 
 export function getSession(): Session {

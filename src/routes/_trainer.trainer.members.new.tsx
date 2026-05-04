@@ -11,6 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Camera } from "lucide-react";
 import { toast } from "sonner";
 import type { PaymentMethod } from "@/lib/types";
+import { compressPhoto } from "@/lib/photo";
 
 export const Route = createFileRoute("/_trainer/trainer/members/new")({
   component: TrainerNewMember,
@@ -43,12 +44,15 @@ function TrainerNewMember() {
       ? upiAmount
       : cashAmount;
 
-  const onPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    const reader = new FileReader();
-    reader.onload = () => setPhoto(reader.result as string);
-    reader.readAsDataURL(f);
+    try {
+      const compressed = await compressPhoto(f);
+      setPhoto(compressed);
+    } catch {
+      toast.error("Could not load photo");
+    }
   };
 
   const submit = () => {
