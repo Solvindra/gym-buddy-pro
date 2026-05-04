@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSession, useGym } from "@/lib/useStore";
 import { getMemberStatus, daysRemaining } from "@/lib/store";
+import { isPro } from "@/lib/subscription";
+import { UpgradeGate } from "@/components/UpgradeGate";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -181,7 +183,13 @@ function MembersList() {
         <Button asChild><Link to="/members/new"><Plus className="h-4 w-4 mr-1" /> New Member</Link></Button>
       </div>
 
-      <FootfallCard />
+      <UpgradeGate
+        feature="Monthly Joiners & Daily Attendance Analytics"
+        description="Upgrade to Pro to see joiner trends and daily attendance charts."
+        locked={!isPro(gym)}
+      >
+        <FootfallCard />
+      </UpgradeGate>
 
       <div className="relative max-w-sm">
         <Search className="h-4 w-4 absolute left-3 top-3 text-muted-foreground" />
