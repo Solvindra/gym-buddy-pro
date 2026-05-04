@@ -25,8 +25,7 @@ const ownerNav = [
   { to: "/attendance", label: "Attendance", icon: ClipboardCheck,   color: "#22c55e", bg: "#22c55e20" },
   { to: "/revenue",    label: "Revenue",    icon: Wallet,           color: "#f59e0b", bg: "#f59e0b20" },
   { to: "/trainers",   label: "Trainers",   icon: UserCog,          color: "#f97316", bg: "#f97316 20" },
-  { to: "/plans",      label: "Plans",      icon: Settings,         color: "#ec4899", bg: "#ec489920" },
-  { to: "/settings",   label: "Appearance", icon: Palette,          color: "#a855f7", bg: "#a855f720" },
+  { to: "/settings",   label: "Settings",   icon: Settings,         color: "#a855f7", bg: "#a855f720" },
 ];
 
 const trainerNav = [
