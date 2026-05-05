@@ -26,6 +26,7 @@ import { Route as OwnerMembersIndexRouteImport } from './routes/_owner.members.i
 import { Route as TrainerTrainerSettingsRouteImport } from './routes/_trainer.trainer.settings'
 import { Route as TrainerTrainerMembersRouteImport } from './routes/_trainer.trainer.members'
 import { Route as TrainerTrainerAttendanceRouteImport } from './routes/_trainer.trainer.attendance'
+import { Route as OwnerMembersPreviousRouteImport } from './routes/_owner.members.previous'
 import { Route as OwnerMembersNewRouteImport } from './routes/_owner.members.new'
 import { Route as OwnerMembersIdRouteImport } from './routes/_owner.members.$id'
 import { Route as TrainerTrainerMembersIndexRouteImport } from './routes/_trainer.trainer.members.index'
@@ -116,6 +117,11 @@ const TrainerTrainerAttendanceRoute =
     path: '/trainer/attendance',
     getParentRoute: () => TrainerRoute,
   } as any)
+const OwnerMembersPreviousRoute = OwnerMembersPreviousRouteImport.update({
+  id: '/members/previous',
+  path: '/members/previous',
+  getParentRoute: () => OwnerRoute,
+} as any)
 const OwnerMembersNewRoute = OwnerMembersNewRouteImport.update({
   id: '/members/new',
   path: '/members/new',
@@ -158,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/trainers': typeof OwnerTrainersRoute
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
+  '/members/previous': typeof OwnerMembersPreviousRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
   '/trainer/members': typeof TrainerTrainerMembersRouteWithChildren
   '/trainer/settings': typeof TrainerTrainerSettingsRoute
@@ -180,6 +187,7 @@ export interface FileRoutesByTo {
   '/trainers': typeof OwnerTrainersRoute
   '/members/$id': typeof OwnerMembersIdRoute
   '/members/new': typeof OwnerMembersNewRoute
+  '/members/previous': typeof OwnerMembersPreviousRoute
   '/trainer/attendance': typeof TrainerTrainerAttendanceRoute
   '/trainer/settings': typeof TrainerTrainerSettingsRoute
   '/members': typeof OwnerMembersIndexRoute
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/_owner/trainers': typeof OwnerTrainersRoute
   '/_owner/members/$id': typeof OwnerMembersIdRoute
   '/_owner/members/new': typeof OwnerMembersNewRoute
+  '/_owner/members/previous': typeof OwnerMembersPreviousRoute
   '/_trainer/trainer/attendance': typeof TrainerTrainerAttendanceRoute
   '/_trainer/trainer/members': typeof TrainerTrainerMembersRouteWithChildren
   '/_trainer/trainer/settings': typeof TrainerTrainerSettingsRoute
@@ -228,6 +237,7 @@ export interface FileRouteTypes {
     | '/trainers'
     | '/members/$id'
     | '/members/new'
+    | '/members/previous'
     | '/trainer/attendance'
     | '/trainer/members'
     | '/trainer/settings'
@@ -250,6 +260,7 @@ export interface FileRouteTypes {
     | '/trainers'
     | '/members/$id'
     | '/members/new'
+    | '/members/previous'
     | '/trainer/attendance'
     | '/trainer/settings'
     | '/members'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/_owner/trainers'
     | '/_owner/members/$id'
     | '/_owner/members/new'
+    | '/_owner/members/previous'
     | '/_trainer/trainer/attendance'
     | '/_trainer/trainer/members'
     | '/_trainer/trainer/settings'
@@ -412,6 +424,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrainerTrainerAttendanceRouteImport
       parentRoute: typeof TrainerRoute
     }
+    '/_owner/members/previous': {
+      id: '/_owner/members/previous'
+      path: '/members/previous'
+      fullPath: '/members/previous'
+      preLoaderRoute: typeof OwnerMembersPreviousRouteImport
+      parentRoute: typeof OwnerRoute
+    }
     '/_owner/members/new': {
       id: '/_owner/members/new'
       path: '/members/new'
@@ -460,6 +479,7 @@ interface OwnerRouteChildren {
   OwnerTrainersRoute: typeof OwnerTrainersRoute
   OwnerMembersIdRoute: typeof OwnerMembersIdRoute
   OwnerMembersNewRoute: typeof OwnerMembersNewRoute
+  OwnerMembersPreviousRoute: typeof OwnerMembersPreviousRoute
   OwnerMembersIndexRoute: typeof OwnerMembersIndexRoute
 }
 
@@ -473,6 +493,7 @@ const OwnerRouteChildren: OwnerRouteChildren = {
   OwnerTrainersRoute: OwnerTrainersRoute,
   OwnerMembersIdRoute: OwnerMembersIdRoute,
   OwnerMembersNewRoute: OwnerMembersNewRoute,
+  OwnerMembersPreviousRoute: OwnerMembersPreviousRoute,
   OwnerMembersIndexRoute: OwnerMembersIndexRoute,
 }
 

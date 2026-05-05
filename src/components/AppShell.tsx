@@ -17,6 +17,8 @@ import {
   X,
   Crown,
   MoreHorizontal,
+  UserCheck,
+  UserX,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +46,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
   const navigate = useNavigate();
   const path = useRouterState({ select: (s) => s.location.pathname });
   const [moreOpen, setMoreOpen] = useState(false);
+  const [membersMenuOpen, setMembersMenuOpen] = useState(false);
 
   useEffect(() => {
     initDarkMode();
@@ -56,6 +59,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
 
   useEffect(() => {
     setMoreOpen(false);
+    setMembersMenuOpen(false);
   }, [path]);
 
   if (!session || !gym) return null;
@@ -250,16 +254,114 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
         </div>
       )}
 
+      {/* ── Members mini-menu popup ── */}
+      {membersMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40"
+          onClick={() => setMembersMenuOpen(false)}
+        >
+          <div className="absolute inset-0 bg-black/40" />
+          {/* Popup anchored above the bottom bar, aligned to the Members tab (2nd of 5) */}
+          <div
+            className="absolute bottom-[72px] left-3 right-3 bg-card border rounded-2xl shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between px-4 py-3 border-b">
+              <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Members</span>
+              <button
+                onClick={() => setMembersMenuOpen(false)}
+                className="h-7 w-7 rounded-lg flex items-center justify-center hover:bg-muted transition-colors"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-px bg-border p-px">
+              {/* Current Members */}
+              <Link
+                to="/members"
+                className={cn(
+                  "flex flex-col items-center gap-2.5 px-4 py-5 bg-card transition-colors",
+                  (path === "/members" || (path.startsWith("/members") && !path.startsWith("/members/previous")))
+                    ? "bg-muted"
+                    : "hover:bg-muted/60"
+                )}
+              >
+                <span className="h-12 w-12 rounded-2xl flex items-center justify-center" style={{ background: "#3b82f620", color: "#3b82f6" }}>
+                  <UserCheck className="h-5 w-5" />
+                </span>
+                <div className="text-center">
+                  <div className="text-[12px] font-semibold leading-tight">Current</div>
+                  <div className="text-[10px] text-muted-foreground leading-tight">Active members</div>
+                </div>
+              </Link>
+              {/* Previous Members */}
+              <Link
+                to="/members/previous"
+                className={cn(
+                  "flex flex-col items-center gap-2.5 px-4 py-5 bg-card transition-colors relative",
+                  path.startsWith("/members/previous") ? "bg-muted" : "hover:bg-muted/60"
+                )}
+              >
+                <span className="h-12 w-12 rounded-2xl flex items-center justify-center" style={{ background: "#f59e0b20", color: "#f59e0b" }}>
+                  <UserX className="h-5 w-5" />
+                </span>
+                <div className="text-center">
+                  <div className="text-[12px] font-semibold leading-tight flex items-center gap-1 justify-center">
+                    Previous
+                    <span className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1 py-0.5 rounded-md leading-none" style={{ background: "#f59e0b20", color: "#f59e0b" }}>
+                      <Crown className="h-2.5 w-2.5" />PRO
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-muted-foreground leading-tight">Expired &amp; cancelled</div>
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Mobile bottom tab bar ── */}
       <div className="md:hidden fixed bottom-0 inset-x-0 z-30 bg-card border-t">
         <nav className="flex items-center h-16 px-2">
           {primaryNav.map((n) => {
+            const isMembersTab = n.to === "/members" && role === "owner";
             const active = path === n.to || path.startsWith(n.to + "/");
             const Icon = n.icon;
+
+            if (isMembersTab) {
+              return (
+                <button
+                  key={n.to}
+                  onClick={() => {
+                    setMoreOpen(false);
+                    setMembersMenuOpen((v) => !v);
+                  }}
+                  className="flex-1 flex flex-col items-center justify-center gap-1 py-1"
+                >
+                  <span
+                    className="h-9 w-9 rounded-xl flex items-center justify-center transition-all"
+                    style={{
+                      background: active || membersMenuOpen ? n.color + "20" : "transparent",
+                      color: active || membersMenuOpen ? n.color : "var(--muted-foreground)",
+                    }}
+                  >
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span
+                    className="text-[10px] font-semibold leading-none"
+                    style={{ color: active || membersMenuOpen ? n.color : "var(--muted-foreground)" }}
+                  >
+                    {n.label}
+                  </span>
+                </button>
+              );
+            }
+
             return (
               <Link
                 key={n.to}
                 to={n.to}
+                onClick={() => { setMoreOpen(false); setMembersMenuOpen(false); }}
                 className="flex-1 flex flex-col items-center justify-center gap-1 py-1"
               >
                 <span
@@ -284,7 +386,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
           {/* More button — only for owner with overflow nav */}
           {moreNav.length > 0 && (
             <button
-              onClick={() => setMoreOpen((v) => !v)}
+              onClick={() => { setMoreOpen((v) => !v); setMembersMenuOpen(false); }}
               className="flex-1 flex flex-col items-center justify-center gap-1 py-1"
             >
               <span
