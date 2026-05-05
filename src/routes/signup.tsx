@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Trash2, Plus, Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,6 +18,56 @@ const defaultPlans: Plan[] = [
   { id: crypto.randomUUID?.() || "p1", name: "Monthly", durationDays: 30, price: 1500 },
   { id: crypto.randomUUID?.() || "p2", name: "Quarterly", durationDays: 90, price: 4000 },
 ];
+
+const INDIAN_STATES = [
+  "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh",
+  "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand",
+  "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur",
+  "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab",
+  "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal",
+  "Andaman & Nicobar Islands", "Chandigarh", "Dadra & Nagar Haveli and Daman & Diu",
+  "Delhi", "Jammu & Kashmir", "Ladakh", "Lakshadweep", "Puducherry",
+];
+
+const CITIES_BY_STATE: Record<string, string[]> = {
+  "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool", "Rajahmundry", "Tirupati", "Kakinada", "Kadapa", "Anantapur"],
+  "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat", "Tezpur"],
+  "Assam": ["Guwahati", "Dibrugarh", "Jorhat", "Silchar", "Tezpur", "Nagaon", "Tinsukia"],
+  "Bihar": ["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Arrah", "Purnia", "Begusarai"],
+  "Chhattisgarh": ["Raipur", "Bhilai", "Bilaspur", "Korba", "Durg", "Raigarh", "Rajnandgaon"],
+  "Goa": ["Panaji", "Vasco da Gama", "Margao", "Mapusa", "Ponda"],
+  "Gujarat": ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Bhavnagar", "Jamnagar", "Gandhinagar", "Junagadh", "Anand", "Nadiad"],
+  "Haryana": ["Faridabad", "Gurgaon", "Panipat", "Ambala", "Yamunanagar", "Rohtak", "Hisar", "Karnal", "Sonipat", "Panchkula"],
+  "Himachal Pradesh": ["Shimla", "Mandi", "Solan", "Dharamsala", "Baddi", "Hamirpur", "Kullu", "Manali"],
+  "Jharkhand": ["Ranchi", "Jamshedpur", "Dhanbad", "Bokaro", "Deoghar", "Phusro", "Hazaribagh"],
+  "Karnataka": ["Bengaluru", "Mysuru", "Hubli", "Mangaluru", "Belagavi", "Davanagere", "Ballari", "Vijayapura", "Shivamogga", "Tumkur"],
+  "Kerala": ["Thiruvananthapuram", "Kochi", "Kozhikode", "Thrissur", "Kollam", "Palakkad", "Alappuzha", "Malappuram", "Kannur", "Kottayam"],
+  "Madhya Pradesh": ["Indore", "Bhopal", "Jabalpur", "Gwalior", "Ujjain", "Sagar", "Ratlam", "Satna", "Dewas", "Murwara"],
+  "Maharashtra": ["Mumbai", "Pune", "Nagpur", "Nashik", "Aurangabad", "Solapur", "Thane", "Kolhapur", "Amravati", "Navi Mumbai", "Vasai-Virar", "Malegaon"],
+  "Manipur": ["Imphal", "Thoubal", "Bishnupur", "Churachandpur"],
+  "Meghalaya": ["Shillong", "Tura", "Jowai"],
+  "Mizoram": ["Aizawl", "Lunglei", "Saiha"],
+  "Nagaland": ["Kohima", "Dimapur", "Mokokchung"],
+  "Odisha": ["Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur", "Puri", "Balasore"],
+  "Punjab": ["Ludhiana", "Amritsar", "Jalandhar", "Patiala", "Bathinda", "Mohali", "Hoshiarpur", "Batala"],
+  "Rajasthan": ["Jaipur", "Jodhpur", "Kota", "Bikaner", "Ajmer", "Udaipur", "Bhilwara", "Alwar", "Sikar", "Bharatpur"],
+  "Sikkim": ["Gangtok", "Namchi", "Mangan"],
+  "Tamil Nadu": ["Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", "Tirunelveli", "Tiruppur", "Vellore", "Erode", "Thoothukudi"],
+  "Telangana": ["Hyderabad", "Warangal", "Nizamabad", "Karimnagar", "Khammam", "Ramagundam", "Secunderabad"],
+  "Tripura": ["Agartala", "Udaipur", "Dharmanagar"],
+  "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Meerut", "Varanasi", "Allahabad", "Bareilly", "Aligarh", "Moradabad", "Noida", "Mathura", "Firozabad"],
+  "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani", "Rudrapur", "Rishikesh", "Kashipur"],
+  "West Bengal": ["Kolkata", "Asansol", "Siliguri", "Durgapur", "Bardhaman", "Malda", "Barasat", "Kharagpur"],
+  "Andaman & Nicobar Islands": ["Port Blair"],
+  "Chandigarh": ["Chandigarh"],
+  "Dadra & Nagar Haveli and Daman & Diu": ["Daman", "Diu", "Silvassa"],
+  "Delhi": ["New Delhi", "Delhi"],
+  "Jammu & Kashmir": ["Srinagar", "Jammu", "Anantnag", "Sopore", "Baramulla"],
+  "Ladakh": ["Leh", "Kargil"],
+  "Lakshadweep": ["Kavaratti"],
+  "Puducherry": ["Puducherry", "Karaikal", "Mahe", "Yanam"],
+};
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -42,6 +93,12 @@ function SignupPage() {
     ownerPhone: form.ownerPhone || "0",
     city: form.city || "X",
   });
+
+  const citiesForState = form.state ? (CITIES_BY_STATE[form.state] ?? []) : [];
+
+  const handleStateChange = (val: string) => {
+    setForm((f) => ({ ...f, state: val, city: "" }));
+  };
 
   const submit = () => {
     if (!form.gymName || !form.ownerName || !form.ownerSurname || !form.ownerPhone || !form.ownerEmail || !form.city || !form.state || !form.password) {
@@ -81,10 +138,42 @@ function SignupPage() {
               <Field label="Owner surname"><Input value={form.ownerSurname} onChange={upd("ownerSurname")} /></Field>
               <Field label="Owner phone"><Input value={form.ownerPhone} onChange={upd("ownerPhone")} /></Field>
               <Field label="Owner email (for OTP)"><Input type="email" value={form.ownerEmail} onChange={upd("ownerEmail")} /></Field>
-              <Field label="City"><Input value={form.city} onChange={upd("city")} /></Field>
-              <Field label="State"><Input value={form.state} onChange={upd("state")} /></Field>
+
+              {/* State dropdown */}
+              <Field label="State">
+                <Select value={form.state} onValueChange={handleStateChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select state" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-64">
+                    {INDIAN_STATES.map((s) => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
+              {/* City dropdown — depends on state */}
+              <Field label="City">
+                <Select
+                  value={form.city}
+                  onValueChange={(val) => setForm((f) => ({ ...f, city: val }))}
+                  disabled={!form.state}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={form.state ? "Select city" : "Select state first"} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-64">
+                    {citiesForState.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </Field>
+
               <Field label="Password"><Input type="password" value={form.password} onChange={upd("password")} /></Field>
             </div>
+
             <div className="rounded-lg border bg-accent/50 p-3 text-sm">
               <span className="text-muted-foreground">Your Gym ID will be:</span>{" "}
               <span className="font-mono font-bold text-primary">{previewId}</span>
