@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Camera, Crown } from "lucide-react";
+import { Camera, Crown, CalendarDays, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { PaymentMethod } from "@/lib/types";
 import { compressPhoto } from "@/lib/photo";
@@ -19,6 +19,11 @@ export const Route = createFileRoute("/_owner/members/new")({
 });
 
 const BLOOD = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+function todayLocal() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
 
 function NewMember() {
   const navigate = useNavigate();
@@ -33,6 +38,8 @@ function NewMember() {
   const [method, setMethod] = useState<PaymentMethod>("cash");
   const [upiAmount, setUpiAmount] = useState(0);
   const [cashAmount, setCashAmount] = useState(0);
+  const [joinMode, setJoinMode] = useState<"today" | "custom">("today");
+  const [customDate, setCustomDate] = useState(todayLocal());
 
   if (!gym) return null;
   const memberLimitReached = !canAddMember(gym);
@@ -53,9 +60,13 @@ function NewMember() {
   const submit = () => {
     if (!name || !phone || !bloodGroup || !planId) return toast.error("Fill all required fields");
     if (total <= 0) return toast.error("Enter the payment amount");
+    const startDate = joinMode === "today"
+      ? new Date().toISOString()
+      : new Date(customDate + "T00:00:00").toISOString();
     const m = addMember(gym.gymId, {
       name, phone, emergencyContact: emergency || undefined, photo, bloodGroup, planId,
-      payment: { method, upiAmount: method === "cash" ? 0 : upiAmount, cashAmount: method === "upi" ? 0 : cashAmount, total, date: new Date().toISOString() },
+      payment: { method, upiAmount: method === "cash" ? 0 : upiAmount, cashAmount: method === "upi" ? 0 : cashAmount, total, date: startDate },
+      startDate,
     });
     if (!m) return toast.error("Could not add member");
     toast.success("Member added! Add medical info next.");
@@ -118,6 +129,59 @@ function NewMember() {
               </Select>
             </div>
           </div>
+
+          {/* Date of Joining */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-1.5">
+              <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
+              Date of joining *
+            </Label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setJoinMode("today")}
+                className={`flex items-center justify-center gap-2 h-10 rounded-lg border text-sm font-medium transition-all ${
+                  joinMode === "today"
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border hover:bg-accent text-muted-foreground"
+                }`}
+              >
+                {joinMode === "today" && <Check className="h-3.5 w-3.5" />}
+                Today
+              </button>
+              <button
+                type="button"
+                onClick={() => setJoinMode("custom")}
+                className={`flex items-center justify-center gap-2 h-10 rounded-lg border text-sm font-medium transition-all ${
+                  joinMode === "custom"
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border hover:bg-accent text-muted-foreground"
+                }`}
+              >
+                {joinMode === "custom" && <Check className="h-3.5 w-3.5" />}
+                Pick date
+              </button>
+            </div>
+            {joinMode === "custom" && (
+              <Input
+                type="date"
+                value={customDate}
+                max={todayLocal()}
+                onChange={(e) => setCustomDate(e.target.value)}
+                className="mt-1"
+              />
+            )}
+            {joinMode === "today" && (
+              <p className="text-xs text-muted-foreground">
+                Membership starts today — {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+              </p>
+            )}
+            {joinMode === "custom" && customDate && (
+              <p className="text-xs text-muted-foreground">
+                Membership starts {new Date(customDate + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+              </p>
+            )}
+          </div>
         </CardContent>
       </Card>
 
@@ -140,7 +204,7 @@ function NewMember() {
             <RadioGroup value={method} onValueChange={(v) => setMethod(v as PaymentMethod)} className="grid grid-cols-3 gap-2">
               {(["cash","upi","split"] as PaymentMethod[]).map((m) => (
                 <Label key={m} className={`border rounded-md px-3 py-2 cursor-pointer text-center capitalize ${method === m ? "border-primary bg-primary/5" : ""}`}>
-                  <RadioGroupItem value={m} className="sr-only" /> {m === "split" ? "UPI + Cash" : m}
+                  <RadioGroupItem value={m} className="sr-only" /> {m === "split" ? "UPI + Cash" : m.toUpperCase()}
                 </Label>
               ))}
             </RadioGroup>

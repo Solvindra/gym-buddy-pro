@@ -212,13 +212,14 @@ export function addMember(
     bloodGroup: string;
     planId: string;
     payment: Payment;
+    startDate?: string;
   }
 ): Member | null {
   const g = getGym(gymId);
   if (!g) return null;
   const plan = g.plans.find((p) => p.id === input.planId);
   if (!plan) return null;
-  const start = new Date().toISOString();
+  const start = input.startDate ?? new Date().toISOString();
   const period: MembershipPeriod = {
     id: crypto.randomUUID(),
     planId: plan.id,
