@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Combobox } from "@/components/ui/combobox";
 import { Trash2, Plus, Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 import { CITIES_BY_STATE } from "@/lib/india-cities";
@@ -92,36 +92,25 @@ function SignupPage() {
               <Field label="Owner phone"><Input value={form.ownerPhone} onChange={upd("ownerPhone")} /></Field>
               <Field label="Owner email (for OTP)"><Input type="email" value={form.ownerEmail} onChange={upd("ownerEmail")} /></Field>
 
-              {/* State dropdown */}
+              {/* State combobox */}
               <Field label="State">
-                <Select value={form.state} onValueChange={handleStateChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select state" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-64">
-                    {INDIAN_STATES.map((s) => (
-                      <SelectItem key={s} value={s}>{s}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Combobox
+                  options={INDIAN_STATES}
+                  value={form.state}
+                  onChange={handleStateChange}
+                  placeholder="Type or select state..."
+                />
               </Field>
 
-              {/* City dropdown — depends on state */}
+              {/* City combobox — depends on state */}
               <Field label="City">
-                <Select
+                <Combobox
+                  options={citiesForState}
                   value={form.city}
-                  onValueChange={(val) => setForm((f) => ({ ...f, city: val }))}
+                  onChange={(val) => setForm((f) => ({ ...f, city: val }))}
+                  placeholder="Type or select city..."
                   disabled={!form.state}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={form.state ? "Select city" : "Select state first"} />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-64">
-                    {citiesForState.map((c) => (
-                      <SelectItem key={c} value={c}>{c}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </Field>
 
               <Field label="Password"><Input type="password" value={form.password} onChange={upd("password")} /></Field>
