@@ -20,15 +20,26 @@ export const Route = createFileRoute("/_owner/members/new")({
 
 const BLOOD = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-function todayLocal() {
-  const d = new Date();
-  return d.toISOString().slice(0, 10);
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+function getDaysInMonth(month: number, year: number) {
+  return new Date(year, month, 0).getDate();
+}
+
+function getYearOptions() {
+  const y = new Date().getFullYear();
+  return [y, y - 1, y - 2, y - 3, y - 4];
 }
 
 function NewMember() {
   const navigate = useNavigate();
   const session = useSession();
   const gym = useGym(session?.gymId);
+
+  const today = new Date();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [emergency, setEmergency] = useState("");
@@ -38,13 +49,31 @@ function NewMember() {
   const [method, setMethod] = useState<PaymentMethod>("cash");
   const [upiAmount, setUpiAmount] = useState(0);
   const [cashAmount, setCashAmount] = useState(0);
+
   const [joinMode, setJoinMode] = useState<"today" | "custom">("today");
-  const [customDate, setCustomDate] = useState(todayLocal());
+  const [joinDay, setJoinDay] = useState(String(today.getDate()));
+  const [joinMonth, setJoinMonth] = useState(String(today.getMonth() + 1));
+  const [joinYear, setJoinYear] = useState(String(today.getFullYear()));
 
   if (!gym) return null;
   const memberLimitReached = !canAddMember(gym);
   const plan = gym.plans.find((p) => p.id === planId);
   const total = method === "split" ? upiAmount + cashAmount : method === "upi" ? upiAmount : cashAmount;
+
+  const maxDay = getDaysInMonth(Number(joinMonth), Number(joinYear));
+  const safeDay = Math.min(Number(joinDay), maxDay);
+
+  const resolvedStartDate =
+    joinMode === "today"
+      ? new Date().toISOString()
+      : new Date(Number(joinYear), Number(joinMonth) - 1, safeDay, 0, 0, 0).toISOString();
+
+  const resolvedLabel =
+    joinMode === "today"
+      ? today.toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })
+      : new Date(Number(joinYear), Number(joinMonth) - 1, safeDay).toLocaleDateString("en-IN", {
+          day: "numeric", month: "long", year: "numeric",
+        });
 
   const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -60,13 +89,16 @@ function NewMember() {
   const submit = () => {
     if (!name || !phone || !bloodGroup || !planId) return toast.error("Fill all required fields");
     if (total <= 0) return toast.error("Enter the payment amount");
-    const startDate = joinMode === "today"
-      ? new Date().toISOString()
-      : new Date(customDate + "T00:00:00").toISOString();
     const m = addMember(gym.gymId, {
       name, phone, emergencyContact: emergency || undefined, photo, bloodGroup, planId,
-      payment: { method, upiAmount: method === "cash" ? 0 : upiAmount, cashAmount: method === "upi" ? 0 : cashAmount, total, date: startDate },
-      startDate,
+      payment: {
+        method,
+        upiAmount: method === "cash" ? 0 : upiAmount,
+        cashAmount: method === "upi" ? 0 : cashAmount,
+        total,
+        date: resolvedStartDate,
+      },
+      startDate: resolvedStartDate,
     });
     if (!m) return toast.error("Could not add member");
     toast.success("Member added! Add medical info next.");
@@ -102,30 +134,50 @@ function NewMember() {
     <div className="max-w-2xl space-y-4">
       <div>
         <h1 className="text-2xl font-bold">New member</h1>
-        <p className="text-sm text-muted-foreground">Register a new member {!isPro(gym) && `(${gym.members.length}/${FREE_MEMBER_LIMIT} used)`}</p>
+        <p className="text-sm text-muted-foreground">
+          Register a new member {!isPro(gym) && `(${gym.members.length}/${FREE_MEMBER_LIMIT} used)`}
+        </p>
       </div>
 
       <Card>
         <CardHeader><CardTitle className="text-base">Personal info</CardTitle></CardHeader>
         <CardContent className="space-y-4">
+          {/* Photo */}
           <div className="flex items-center gap-4">
             <div className="h-20 w-20 rounded-full bg-accent overflow-hidden flex items-center justify-center">
-              {photo ? <img src={photo} className="h-full w-full object-cover" /> : <Camera className="h-6 w-6 text-muted-foreground" />}
+              {photo
+                ? <img src={photo} className="h-full w-full object-cover" />
+                : <Camera className="h-6 w-6 text-muted-foreground" />}
             </div>
             <Label className="cursor-pointer">
-              <span className="inline-flex items-center px-3 py-2 rounded-md border bg-background hover:bg-accent text-sm">Upload photo</span>
+              <span className="inline-flex items-center px-3 py-2 rounded-md border bg-background hover:bg-accent text-sm">
+                Upload photo
+              </span>
               <input type="file" accept="image/*" className="hidden" onChange={onPhoto} />
             </Label>
           </div>
+
+          {/* Name / Phone / Emergency / Blood */}
           <div className="grid sm:grid-cols-2 gap-3">
-            <div className="space-y-1.5"><Label>Full name *</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Phone *</Label><Input value={phone} onChange={(e) => setPhone(e.target.value)} /></div>
-            <div className="space-y-1.5"><Label>Emergency contact</Label><Input value={emergency} onChange={(e) => setEmergency(e.target.value)} /></div>
+            <div className="space-y-1.5">
+              <Label>Full name *</Label>
+              <Input value={name} onChange={(e) => setName(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Phone *</Label>
+              <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Emergency contact</Label>
+              <Input value={emergency} onChange={(e) => setEmergency(e.target.value)} />
+            </div>
             <div className="space-y-1.5">
               <Label>Blood group *</Label>
               <Select value={bloodGroup} onValueChange={setBloodGroup}>
                 <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
-                <SelectContent>{BLOOD.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}</SelectContent>
+                <SelectContent>
+                  {BLOOD.map((b) => <SelectItem key={b} value={b}>{b}</SelectItem>)}
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -136,6 +188,8 @@ function NewMember() {
               <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
               Date of joining *
             </Label>
+
+            {/* Today / Pick date toggle */}
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -162,25 +216,45 @@ function NewMember() {
                 Pick date
               </button>
             </div>
+
+            {/* Day / Month / Year dropdowns — only shown in custom mode */}
             {joinMode === "custom" && (
-              <Input
-                type="date"
-                value={customDate}
-                max={todayLocal()}
-                onChange={(e) => setCustomDate(e.target.value)}
-                className="mt-1"
-              />
+              <div className="grid grid-cols-3 gap-2">
+                {/* Day */}
+                <Select value={joinDay} onValueChange={setJoinDay}>
+                  <SelectTrigger><SelectValue placeholder="Day" /></SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: maxDay }, (_, i) => String(i + 1)).map((d) => (
+                      <SelectItem key={d} value={d}>{d}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Month */}
+                <Select value={joinMonth} onValueChange={setJoinMonth}>
+                  <SelectTrigger><SelectValue placeholder="Month" /></SelectTrigger>
+                  <SelectContent>
+                    {MONTHS.map((m, i) => (
+                      <SelectItem key={i + 1} value={String(i + 1)}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                {/* Year */}
+                <Select value={joinYear} onValueChange={setJoinYear}>
+                  <SelectTrigger><SelectValue placeholder="Year" /></SelectTrigger>
+                  <SelectContent>
+                    {getYearOptions().map((y) => (
+                      <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
-            {joinMode === "today" && (
-              <p className="text-xs text-muted-foreground">
-                Membership starts today — {new Date().toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
-              </p>
-            )}
-            {joinMode === "custom" && customDate && (
-              <p className="text-xs text-muted-foreground">
-                Membership starts {new Date(customDate + "T00:00:00").toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
-              </p>
-            )}
+
+            <p className="text-xs text-muted-foreground">
+              Membership starts {resolvedLabel}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -193,7 +267,9 @@ function NewMember() {
             <Select value={planId} onValueChange={setPlanId}>
               <SelectTrigger><SelectValue placeholder="Select a plan" /></SelectTrigger>
               <SelectContent>
-                {gym.plans.map((p) => <SelectItem key={p.id} value={p.id}>{p.name} — {p.durationDays}d · ₹{p.price}</SelectItem>)}
+                {gym.plans.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>{p.name} — {p.durationDays}d · ₹{p.price}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {plan && <p className="text-xs text-muted-foreground">Suggested price: ₹{plan.price}</p>}
@@ -201,10 +277,20 @@ function NewMember() {
 
           <div className="space-y-2">
             <Label>Payment method *</Label>
-            <RadioGroup value={method} onValueChange={(v) => setMethod(v as PaymentMethod)} className="grid grid-cols-3 gap-2">
-              {(["cash","upi","split"] as PaymentMethod[]).map((m) => (
-                <Label key={m} className={`border rounded-md px-3 py-2 cursor-pointer text-center capitalize ${method === m ? "border-primary bg-primary/5" : ""}`}>
-                  <RadioGroupItem value={m} className="sr-only" /> {m === "split" ? "UPI + Cash" : m.toUpperCase()}
+            <RadioGroup
+              value={method}
+              onValueChange={(v) => setMethod(v as PaymentMethod)}
+              className="grid grid-cols-3 gap-2"
+            >
+              {(["cash", "upi", "split"] as PaymentMethod[]).map((m) => (
+                <Label
+                  key={m}
+                  className={`border rounded-md px-3 py-2 cursor-pointer text-center capitalize ${
+                    method === m ? "border-primary bg-primary/5" : ""
+                  }`}
+                >
+                  <RadioGroupItem value={m} className="sr-only" />
+                  {m === "split" ? "UPI + Cash" : m.toUpperCase()}
                 </Label>
               ))}
             </RadioGroup>
@@ -212,12 +298,19 @@ function NewMember() {
 
           <div className="grid sm:grid-cols-2 gap-3">
             {(method === "upi" || method === "split") && (
-              <div className="space-y-1.5"><Label>UPI amount ₹</Label><Input type="number" value={upiAmount || ""} onChange={(e) => setUpiAmount(+e.target.value)} /></div>
+              <div className="space-y-1.5">
+                <Label>UPI amount ₹</Label>
+                <Input type="number" value={upiAmount || ""} onChange={(e) => setUpiAmount(+e.target.value)} />
+              </div>
             )}
             {(method === "cash" || method === "split") && (
-              <div className="space-y-1.5"><Label>Cash amount ₹</Label><Input type="number" value={cashAmount || ""} onChange={(e) => setCashAmount(+e.target.value)} /></div>
+              <div className="space-y-1.5">
+                <Label>Cash amount ₹</Label>
+                <Input type="number" value={cashAmount || ""} onChange={(e) => setCashAmount(+e.target.value)} />
+              </div>
             )}
           </div>
+
           <div className="rounded-md bg-accent/50 p-3 text-sm flex justify-between">
             <span className="text-muted-foreground">Total received</span>
             <span className="font-bold">₹{total.toLocaleString()}</span>

@@ -169,16 +169,19 @@ function MembersList() {
   const [q, setQ] = useState("");
   if (!gym) return null;
 
-  const filtered = gym.members.filter((m) =>
-    m.name.toLowerCase().includes(q.toLowerCase()) || m.phone.includes(q)
-  );
+  const filtered = gym.members.filter((m) => {
+    if (getMemberStatus(m) === "cancelled") return false;
+    return m.name.toLowerCase().includes(q.toLowerCase()) || m.phone.includes(q);
+  });
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Members</h1>
-          <p className="text-sm text-muted-foreground">{gym.members.length} total members</p>
+          <p className="text-sm text-muted-foreground">
+            {gym.members.filter((m) => getMemberStatus(m) !== "cancelled").length} active members
+          </p>
         </div>
         <Button asChild><Link to="/members/new"><Plus className="h-4 w-4 mr-1" /> New Member</Link></Button>
       </div>
