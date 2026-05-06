@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSession, useGym } from "@/lib/useStore";
 import { getMemberStatus, daysRemaining } from "@/lib/store";
 import { isPro } from "@/lib/subscription";
@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Users, UserCheck } from "lucide-react";
+import { Plus, Search, Users, UserCheck, UserX, Crown } from "lucide-react";
 import { useState, useMemo } from "react";
+import { cn } from "@/lib/utils";
 import {
   LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer,
   CartesianGrid, Dot,
@@ -166,11 +167,19 @@ function FootfallCard() {
 function MembersList() {
   const session = useSession();
   const gym = useGym(session?.gymId);
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
   if (!gym) return null;
 
+  const pro = isPro(gym);
+  const activeCount = gym.members.filter((m) => getMemberStatus(m) === "active").length;
+  const previousCount = gym.members.filter((m) => {
+    const s = getMemberStatus(m);
+    return s === "expired" || s === "cancelled";
+  }).length;
+
   const filtered = gym.members.filter((m) => {
-    if (getMemberStatus(m) === "cancelled") return false;
+    if (getMemberStatus(m) !== "active") return false;
     return m.name.toLowerCase().includes(q.toLowerCase()) || m.phone.includes(q);
   });
 
@@ -179,11 +188,35 @@ function MembersList() {
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Members</h1>
-          <p className="text-sm text-muted-foreground">
-            {gym.members.filter((m) => getMemberStatus(m) !== "cancelled").length} active members
-          </p>
+          <p className="text-sm text-muted-foreground">{activeCount} active member{activeCount !== 1 ? "s" : ""}</p>
         </div>
         <Button asChild><Link to="/members/new"><Plus className="h-4 w-4 mr-1" /> New Member</Link></Button>
+      </div>
+
+      {/* Current / Previous tab switcher */}
+      <div className="flex gap-2 p-1 bg-muted rounded-xl w-fit">
+        <button
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+            "bg-card shadow-sm text-foreground"
+          )}
+        >
+          <UserCheck className="h-4 w-4 text-blue-500" />
+          Current
+          <span className="text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold px-1.5 py-0.5 rounded-md leading-none">{activeCount}</span>
+        </button>
+        <button
+          onClick={() => navigate({ to: "/members/previous" })}
+          className={cn(
+            "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+            "text-muted-foreground hover:text-foreground hover:bg-card/60"
+          )}
+        >
+          <UserX className="h-4 w-4 text-amber-500" />
+          Previous
+          <span className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded-md leading-none">{previousCount}</span>
+          {!pro && <Crown className="h-3 w-3 text-amber-500" />}
+        </button>
       </div>
 
       <UpgradeGate

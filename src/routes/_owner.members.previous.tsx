@@ -10,7 +10,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Search, Crown, UserX, ArrowLeft, Plus } from "lucide-react";
+import { Search, Crown, UserX, UserCheck, Plus, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { toast } from "sonner";
 import type { PaymentMethod } from "@/lib/types";
@@ -28,14 +29,44 @@ function PreviousMembers() {
 
   if (!gym) return null;
 
+  const activeCount = gym.members.filter((m) => getMemberStatus(m) === "active").length;
+  const previousCount = gym.members.filter((m) => {
+    const s = getMemberStatus(m);
+    return s === "expired" || s === "cancelled";
+  }).length;
+
+  const TabSwitcher = () => (
+    <div className="flex gap-2 p-1 bg-muted rounded-xl w-fit">
+      <Link
+        to="/members"
+        className={cn(
+          "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+          "text-muted-foreground hover:text-foreground hover:bg-card/60"
+        )}
+      >
+        <UserCheck className="h-4 w-4 text-blue-500" />
+        Current
+        <span className="text-xs bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold px-1.5 py-0.5 rounded-md leading-none">{activeCount}</span>
+      </Link>
+      <button
+        className={cn(
+          "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all",
+          "bg-card shadow-sm text-foreground"
+        )}
+      >
+        <UserX className="h-4 w-4 text-amber-500" />
+        Previous
+        <span className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold px-1.5 py-0.5 rounded-md leading-none">{previousCount}</span>
+      </button>
+    </div>
+  );
+
   if (!isPro(gym)) {
     return (
       <div className="max-w-2xl space-y-4">
-        <div className="flex items-center gap-3">
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/members"><ArrowLeft className="h-4 w-4 mr-1" /> Back</Link>
-          </Button>
-          <h1 className="text-2xl font-bold">Previous Members</h1>
+        <div>
+          <h1 className="text-2xl font-bold mb-3">Members</h1>
+          <TabSwitcher />
         </div>
         <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-10 text-center space-y-4">
           <div className="h-14 w-14 rounded-2xl bg-amber-500/20 flex items-center justify-center mx-auto">
@@ -68,17 +99,12 @@ function PreviousMembers() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3 flex-wrap">
-        <Button asChild variant="ghost" size="sm" className="-ml-2">
-          <Link to="/members"><ArrowLeft className="h-4 w-4 mr-1" /> Current Members</Link>
-        </Button>
-      </div>
-
       <div>
-        <h1 className="text-2xl font-bold">Previous Members</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-2xl font-bold mb-1">Members</h1>
+        <p className="text-sm text-muted-foreground mb-3">
           {previous.length} expired or cancelled member{previous.length !== 1 ? "s" : ""}
         </p>
+        <TabSwitcher />
       </div>
 
       <div className="relative max-w-sm">

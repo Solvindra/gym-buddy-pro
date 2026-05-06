@@ -19,7 +19,7 @@ export function AttendancePage({ role }: { role: "owner" | "trainer" }) {
   const today = new Date().toISOString().slice(0, 10);
   const todayLabel = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
   const filtered = gym.members.filter((m) =>
-    getMemberStatus(m) !== "cancelled" &&
+    getMemberStatus(m) === "active" &&
     (m.name.toLowerCase().includes(q.toLowerCase()) || m.phone.includes(q))
   );
   const presentCount = gym.members.filter((m) => m.attendance.includes(today)).length;
