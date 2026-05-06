@@ -51,7 +51,7 @@ function WelcomePage() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-10">
       {/* Logo */}
       <div className="flex flex-col items-center gap-3 mb-10">
-        <img src="/logo-transparent.png" alt="The Track" className="w-24 h-24 object-contain invert dark:invert-0" />
+        <img src="/logo-transparent.png" alt="The Track" className="w-28 h-28 object-contain invert dark:invert-0 mx-auto block" />
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">The Track</h1>
           <p className="text-muted-foreground mt-1 text-sm">Your gym, fully managed</p>

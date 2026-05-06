@@ -72,7 +72,7 @@ function SignupPage() {
     <div className="min-h-screen p-4 py-10" style={{ background: "var(--gradient-subtle)" }}>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-6">
-          <img src="/logo-transparent.png" alt="The Track" className="h-14 w-14 object-contain mb-1 invert dark:invert-0" />
+          <img src="/logo-transparent.png" alt="The Track" className="h-16 w-16 object-contain mb-2 invert dark:invert-0 mx-auto block" />
           <h1 className="text-2xl font-bold">Create your gym on The Track</h1>
           <p className="text-sm text-muted-foreground">Set up your gym profile and plans</p>
         </div>
