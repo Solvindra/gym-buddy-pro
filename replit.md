@@ -1,10 +1,10 @@
-# FitTrack Gym Manager
+# The Track — Gym Manager
 
 A gym management web application built with React + Vite, TanStack Router, TailwindCSS v4, and shadcn/ui components.
 
 ## Project Overview
 
-FitTrack is a full-featured gym management system with two roles:
+The Track is a full-featured gym management system with two roles:
 - **Owner**: Can manage members, trainers, plans, attendance, revenue, and settings
 - **Trainer**: Can view members and attendance
 

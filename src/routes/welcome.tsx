@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Dumbbell, Globe, Share, Plus, MoreHorizontal, Chrome } from "lucide-react";
+import { Globe, Share, Plus, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/welcome")({
@@ -22,7 +22,7 @@ function isAndroid() {
   return /android/i.test(navigator.userAgent);
 }
 
-export function WelcomePage() {
+function WelcomePage() {
   const navigate = useNavigate();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
   const [showAndroidGuide, setShowAndroidGuide] = useState(false);
@@ -51,11 +51,11 @@ export function WelcomePage() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-10">
       {/* Logo */}
       <div className="flex flex-col items-center gap-3 mb-10">
-        <div className="w-20 h-20 rounded-3xl bg-primary flex items-center justify-center shadow-xl">
-          <Dumbbell className="w-10 h-10 text-primary-foreground" />
+        <div className="w-24 h-24 rounded-3xl bg-black flex items-center justify-center shadow-xl">
+          <img src="/logo.png" alt="The Track" className="w-16 h-16 object-contain" />
         </div>
         <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight">FitTrack</h1>
+          <h1 className="text-3xl font-bold tracking-tight">The Track</h1>
           <p className="text-muted-foreground mt-1 text-sm">Your gym, fully managed</p>
         </div>
       </div>
@@ -64,7 +64,7 @@ export function WelcomePage() {
       {!showIOSGuide && !showAndroidGuide && (
         <div className="w-full max-w-sm space-y-4">
           <p className="text-center text-sm text-muted-foreground mb-6">
-            How would you like to use FitTrack?
+            How would you like to use The Track?
           </p>
 
           {/* Add to Home Screen */}
@@ -125,8 +125,8 @@ export function WelcomePage() {
             <Step number={2} icon={<Plus className="w-5 h-5 text-primary" />}>
               Scroll down and tap <strong>"Add to Home Screen"</strong>
             </Step>
-            <Step number={3} icon={<Dumbbell className="w-5 h-5 text-primary" />}>
-              Tap <strong>Add</strong> — FitTrack will appear on your home screen like an app
+            <Step number={3} icon={<img src="/logo.png" className="w-5 h-5 object-contain invert dark:invert-0" alt="" />}>
+              Tap <strong>Add</strong> — The Track will appear on your home screen like an app
             </Step>
           </div>
 
@@ -160,8 +160,8 @@ export function WelcomePage() {
             <Step number={2} icon={<Plus className="w-5 h-5 text-primary" />}>
               Tap <strong>"Add to Home screen"</strong>
             </Step>
-            <Step number={3} icon={<Dumbbell className="w-5 h-5 text-primary" />}>
-              Tap <strong>Add</strong> — FitTrack appears on your home screen
+            <Step number={3} icon={<img src="/logo.png" className="w-5 h-5 object-contain invert dark:invert-0" alt="" />}>
+              Tap <strong>Add</strong> — The Track appears on your home screen
             </Step>
           </div>
 

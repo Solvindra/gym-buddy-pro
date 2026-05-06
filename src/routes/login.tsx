@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Dumbbell } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -28,10 +27,10 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-subtle)" }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="inline-flex h-14 w-14 rounded-2xl items-center justify-center mb-3 text-primary-foreground shadow-md" style={{ background: "var(--gradient-primary)" }}>
-            <Dumbbell className="h-7 w-7" />
+          <div className="inline-flex h-14 w-14 rounded-2xl items-center justify-center mb-3 shadow-md bg-black">
+            <img src="/logo.png" alt="The Track" className="h-10 w-10 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">FitTrack Gym Manager</h1>
+          <h1 className="text-2xl font-bold tracking-tight">The Track</h1>
           <p className="text-sm text-muted-foreground">Sign in to manage your gym</p>
         </div>
 

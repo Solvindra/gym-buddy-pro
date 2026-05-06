@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Combobox } from "@/components/ui/combobox";
-import { Trash2, Plus, Dumbbell } from "lucide-react";
+import { Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { CITIES_BY_STATE } from "@/lib/india-cities";
 
@@ -72,10 +72,10 @@ function SignupPage() {
     <div className="min-h-screen p-4 py-10" style={{ background: "var(--gradient-subtle)" }}>
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-6">
-          <div className="inline-flex h-12 w-12 rounded-xl items-center justify-center mb-3 text-primary-foreground shadow" style={{ background: "var(--gradient-primary)" }}>
-            <Dumbbell className="h-6 w-6" />
+          <div className="inline-flex h-12 w-12 rounded-xl items-center justify-center mb-3 shadow bg-black">
+            <img src="/logo.png" alt="The Track" className="h-9 w-9 object-contain" />
           </div>
-          <h1 className="text-2xl font-bold">Create your gym</h1>
+          <h1 className="text-2xl font-bold">Create your gym on The Track</h1>
           <p className="text-sm text-muted-foreground">Set up your gym profile and plans</p>
         </div>
 
