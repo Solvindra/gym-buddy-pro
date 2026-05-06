@@ -83,7 +83,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       <aside className="hidden md:flex w-64 flex-col fixed inset-y-0 left-0 z-40 border-r bg-sidebar text-sidebar-foreground shadow-xl">
         <div className="px-5 py-5 border-b">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="The Track" className="h-10 w-10 object-contain shrink-0 mix-blend-screen dark:mix-blend-screen" />
+            <img src="/logo.png" alt="The Track" className="h-10 w-10 object-contain shrink-0 dark:invert" />
             <div className="min-w-0">
               <div className="font-bold truncate leading-tight">{gym.gymName}</div>
               <div className="text-[11px] text-muted-foreground font-mono">ID: {gym.gymId}</div>
@@ -149,7 +149,7 @@ export function AppShell({ role }: { role: "owner" | "trainer" }) {
       {/* ── Mobile top bar ── */}
       <div className="md:hidden fixed top-0 inset-x-0 z-30 bg-card border-b h-14 flex items-center justify-between px-4">
         <div className="flex items-center gap-2.5">
-          <img src="/logo.png" alt="The Track" className="h-8 w-8 object-contain shrink-0 mix-blend-screen" />
+          <img src="/logo.png" alt="The Track" className="h-8 w-8 object-contain shrink-0 dark:invert" />
           <div className="min-w-0">
             <div className="font-bold text-sm leading-tight truncate">{gym.gymName}</div>
             <div className="text-[10px] text-muted-foreground font-mono leading-none">ID: {gym.gymId}</div>
