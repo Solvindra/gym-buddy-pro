@@ -27,9 +27,7 @@ function LoginPage() {
     <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "var(--gradient-subtle)" }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
-          <div className="inline-flex h-14 w-14 rounded-2xl items-center justify-center mb-3 shadow-md bg-black">
-            <img src="/logo.png" alt="The Track" className="h-10 w-10 object-contain" />
-          </div>
+          <img src="/logo-transparent.png" alt="The Track" className="h-16 w-16 object-contain mb-1 invert dark:invert-0" />
           <h1 className="text-2xl font-bold tracking-tight">The Track</h1>
           <p className="text-sm text-muted-foreground">Sign in to manage your gym</p>
         </div>

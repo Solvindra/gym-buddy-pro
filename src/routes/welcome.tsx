@@ -51,9 +51,7 @@ function WelcomePage() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5 py-10">
       {/* Logo */}
       <div className="flex flex-col items-center gap-3 mb-10">
-        <div className="w-24 h-24 rounded-3xl bg-black flex items-center justify-center shadow-xl">
-          <img src="/logo.png" alt="The Track" className="w-16 h-16 object-contain" />
-        </div>
+        <img src="/logo-transparent.png" alt="The Track" className="w-24 h-24 object-contain invert dark:invert-0" />
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">The Track</h1>
           <p className="text-muted-foreground mt-1 text-sm">Your gym, fully managed</p>
@@ -125,7 +123,7 @@ function WelcomePage() {
             <Step number={2} icon={<Plus className="w-5 h-5 text-primary" />}>
               Scroll down and tap <strong>"Add to Home Screen"</strong>
             </Step>
-            <Step number={3} icon={<img src="/logo.png" className="w-5 h-5 object-contain invert dark:invert-0" alt="" />}>
+            <Step number={3} icon={<img src="/logo-transparent.png" className="w-5 h-5 object-contain invert dark:invert-0" alt="" />}>
               Tap <strong>Add</strong> — The Track will appear on your home screen like an app
             </Step>
           </div>
@@ -160,7 +158,7 @@ function WelcomePage() {
             <Step number={2} icon={<Plus className="w-5 h-5 text-primary" />}>
               Tap <strong>"Add to Home screen"</strong>
             </Step>
-            <Step number={3} icon={<img src="/logo.png" className="w-5 h-5 object-contain invert dark:invert-0" alt="" />}>
+            <Step number={3} icon={<img src="/logo-transparent.png" className="w-5 h-5 object-contain invert dark:invert-0" alt="" />}>
               Tap <strong>Add</strong> — The Track appears on your home screen
             </Step>
           </div>
